@@ -60,7 +60,7 @@
        (>! (:done-channel request) :done)))))
 
 (defn process-request
-  ""
+  "process the request pipeline for any events arriving in this skill"
   [request]
   (let [done-channel (chan)]
     ;; create a pipeline of handlers but always end by writing to the done channel and logging something

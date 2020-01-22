@@ -1,27 +1,26 @@
 (ns atomist.main
-  (:require [atomist.json :as json]
-            [atomist.api :as api]
-            [atomist.promise :as promise]
-            [stupendabot.k8-spec-updater]
-            [stupendabot.make-some-pushes]
-            [stupendabot.tokens]
-            [cljs.pprint :refer [pprint]]
+  (:require [cljs.pprint :refer [pprint]]
             [cljs.core.async :refer [<! timeout chan]]
+            [clojure.string :as s]
             [goog.crypt.base64 :as b64]
             [goog.string :as gstring]
             [goog.string.format]
             [atomist.cljs-log :as log]
             [atomist.editors :as editors]
-            [atomist.sdmprojectmodel :as sdm])
+            [atomist.sdmprojectmodel :as sdm]
+            [atomist.json :as json]
+            [atomist.api :as api]
+            [atomist.promise :as promise])
   (:require-macros [cljs.core.async.macros :refer [go]]))
 
-(defn editor
+(defn editor [s]
   "content - string to update"
-  [content]
-  )
+  (let [[_ pattern replace] (re-find #"s/(.*)/(.*)/g" s)]
+    (fn [content]
+      (s/replace content (re-pattern pattern) replace))))
 
 (defn compile-simple-content-editor
-  "use the sdm model "
+  "use the sdm model"
   [request content-editor]
   (fn [f]
     (go
@@ -39,30 +38,28 @@
      - :image selected for replacement - select-recent-image middleware"
   [handler]
   (fn [request]
-    (log/infof "update version of spec for %s" (-> request :linked-repos first))
+    (log/infof "run editor %s on %s for %s" (:expression request) (:glob-pattern request) (-> request :linked-repos first))
     (go
      (<! (editors/perform-edits
-          (compile-simple-content-editor request editor)
+          (compile-simple-content-editor request (editor (:expression request)))
           (:glob-pattern request)
           (:token request)
           (:ref request)
           (gstring/format "Update %s/%s" (-> request :ref :owner) (-> request :ref :repo))))
      (<! (api/simple-message request (goog.string/format "edited %s/%s"
-                                                            (-> request :ref :owner)
-                                                            (-> request :ref :repo))))
+                                                         (-> request :ref :owner)
+                                                         (-> request :ref :repo))))
      (handler request))))
 
-(defn create-ref-from-first-linked-repo
-  "construct a GitHub ref
-    - the repo name is a parameter expression which can use parameter values
-    - always use master branch"
-  [handler]
+(defn skip-events [handler]
   (fn [request]
-    (handler (assoc request :ref {:repo (api/parameter-expression request (:repo request))
-                                     :owner (:owner request)
-                                     :branch (:branch request)}))))
+    (if (= "StringReplaceSkill" (:command request))
+      (handler (request))
+      (go
+       (log/info "stopping for unrecognized event")
+       (>! (:done-channel request) :done)))))
 
-(defn command-handler
+(defn process-request
   ""
   [request]
   (let [done-channel (chan)]
@@ -71,21 +68,21 @@
            (log/info "----> finished - string-replace skill")
            (go (>! (:done-channel ch-request) :done)))
          (run-editors)
-         (create-ref-from-first-linked-repo)
+         (api/create-ref-from-first-linked-repo)
          (api/extract-linked-repos)
          (api/extract-github-user-token)
-         (api/check-required-parameters
-          {:name "glob-pattern"
-           :required true
-           :pattern ".*"
-           :validInput "**/*.md"}
-          {:name "expression"
-           :required true
-           :pattern ".*"
-           :validInput "s/<match>/<replace>/g"})
-         (api/set-message-id)) (assoc request
-                                 :done-channel done-channel
-                                 :branch "master"))
+         (api/check-required-parameters {:name "glob-pattern"
+                                         :required true
+                                         :pattern ".*"
+                                         :validInput "**/*.md"}
+                                        {:name "expression"
+                                         :required true
+                                         :pattern ".*"
+                                         :validInput "s/<match>/<replace>/g"})
+         (api/set-message-id)
+         (skip-events)) (assoc request
+                          :done-channel done-channel
+                          :branch "master"))
     done-channel))
 
 (defn ^:export handler
@@ -96,5 +93,5 @@
       sendreponse - callback ([obj]) puts an outgoing message on the response topic"
   [data sendreponse]
   (promise/chan->promise
-   (command-handler (assoc (js->clj data :keywordize-keys true)
+   (process-request (assoc (js->clj data :keywordize-keys true)
                       :sendreponse sendreponse))))

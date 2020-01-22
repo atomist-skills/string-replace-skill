@@ -56,7 +56,7 @@
     (if (= "StringReplaceSkill" (:command request))
       (handler (request))
       (go
-       (log/info "stopping for unrecognized event")
+       (log/info "not processing unrecognized event")
        (>! (:done-channel request) :done)))))
 
 (defn process-request

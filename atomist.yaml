@@ -31,7 +31,7 @@ skill:
   license: Apache-2.0
   homepage: https://github.com/atomist-skills/string-replace-skill
   repository: https://github.com/atomist-skills/string-replace-skill
-  icon: https://cdn.shopify.com/s/files/1/0984/9248/products/Untitled-2-22_2048x.jpg?v=1527589468
+  icon: https://images.atomist.com/rug/regex.png
 
   package:
     use: '@atomist/package-cljs-skill'

@@ -54,7 +54,7 @@
 (defn skip-events [handler]
   (fn [request]
     (if (= "StringReplaceSkill" (:command request))
-      (handler (request))
+      (handler request)
       (go
        (log/info "not processing unrecognized event")
        (>! (:done-channel request) :done)))))

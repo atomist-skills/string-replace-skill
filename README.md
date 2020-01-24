@@ -20,7 +20,6 @@ Using this skill to keep this date synced with the last Commit:  wrong
 | String replacement pattern | String Replacement (e.g. s/(([c]\)\s*)2019/$12020/ig ) | `Text` | true |  |
 | Scope | Selected GitHub Organization(s) and/or Repositories | `Org & Repo Selection` | false | By default, scope will include all organizations and repos available in the workspace  |
 
-
 ---
 
 Created by [Atomist][atomist].

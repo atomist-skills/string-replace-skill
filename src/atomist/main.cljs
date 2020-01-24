@@ -40,12 +40,19 @@
   (fn [request]
     (log/infof "run editor %s on %s for %s" (:expression request) (:glob-pattern request) (-> request :linked-repos first))
     (go
-     (<! (editors/perform-edits
+     (<! (editors/perform-edits-in-PR
           (compile-simple-content-editor request (editor (:expression request)))
           (:glob-pattern request)
           (:token request)
           (:ref request)
-          (gstring/format "Update %s/%s" (-> request :ref :owner) (-> request :ref :repo))))
+          {:target-branch "master"
+           :branch (str (random-uuid))
+           :title "String Replace Skill running"
+           :body (gstring/format "Update %s/%s - running %s over %s"
+                                 (-> request :ref :owner)
+                                 (-> request :ref :repo)
+                                 (:expression request)
+                                 (:glob-pattern request))}))
      (<! (api/simple-message request (goog.string/format "edited %s/%s"
                                                          (-> request :ref :owner)
                                                          (-> request :ref :repo))))
@@ -79,6 +86,8 @@
                                          :required true
                                          :pattern ".*"
                                          :validInput "s/<match>/<replace>/g"})
+         (api/extract-cli-parameters [[nil "--glob-pattern PATTERN" "glob pattern"]
+                                      [nil "--expression REGEX" "REGEX expression"]])
          (api/set-message-id)
          (skip-events)) (assoc request
                           :done-channel done-channel

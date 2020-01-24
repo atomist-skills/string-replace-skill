@@ -10,6 +10,19 @@
   (log/info "args " args))
 
 (comment
+ ;; EVENT
+ (.catch
+  (.then
+   (atomist.main/handler #js {:data {:Push [{:branch "0073c5ea-954e-40fc-8984-284f53e60442"
+                                             :repo {:name "view-service"
+                                                    :org {:owner "atomisthq"
+                                                          :scmProvider {:providerId "zjlmxjzwhurspem"
+                                                                        :credential {:secret "token"}}}}}]}}
+                         fake-handler)
+   (fn [v] (log/info "value " v)))
+  (fn [error] (log/error "error " error)))
+
+ ;; COMMAND HANDLER
  (.catch
   (.then
    (atomist.main/handler #js {:command "StringReplaceSkill"

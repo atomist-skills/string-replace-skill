@@ -38,7 +38,7 @@
      - :image selected for replacement - select-recent-image middleware"
   [handler]
   (fn [request]
-    (log/infof "run editor %s on %s for %s" (:expression request) (:glob-pattern request) (-> request :linked-repos first))
+    (log/infof "run editor %s over %s on %s" (:expression request) (:glob-pattern request) (-> request :ref))
     (go
      (<! (editors/perform-edits-in-PR
           (compile-simple-content-editor request (editor (:expression request)))
@@ -58,40 +58,55 @@
                                                          (-> request :ref :repo))))
      (handler request))))
 
-(defn skip-events [handler]
+(defn log-attempt [handler]
   (fn [request]
-    (if (= "StringReplaceSkill" (:command request))
-      (handler request)
-      (go
-       (log/info "not processing unrecognized event")
-       (>! (:done-channel request) :done)))))
+    (log/infof "Push Request %s over %s on %s" (:expression request) (:glob-pattern request) (:ref request))
+    (handler request)))
+
+(defn finished [ch-request]
+  (log/info "----> finished - string-replace skill")
+  (go (>! (:done-channel ch-request) :done)))
 
 (defn process-request
   "process the request pipeline for any events arriving in this skill"
   [request]
   (let [done-channel (chan)]
-    ;; create a pipeline of handlers but always end by writing to the done channel and logging something
-    ((-> (fn [ch-request]
-           (log/info "----> finished - string-replace skill")
-           (go (>! (:done-channel ch-request) :done)))
-         (run-editors)
-         (api/create-ref-from-first-linked-repo)
-         (api/extract-linked-repos)
-         (api/extract-github-user-token)
-         (api/check-required-parameters {:name "glob-pattern"
-                                         :required true
-                                         :pattern ".*"
-                                         :validInput "**/*.md"}
-                                        {:name "expression"
-                                         :required true
-                                         :pattern ".*"
-                                         :validInput "s/<match>/<replace>/g"})
-         (api/extract-cli-parameters [[nil "--glob-pattern PATTERN" "glob pattern"]
-                                      [nil "--expression REGEX" "REGEX expression"]])
-         (api/set-message-id)
-         (skip-events)) (assoc request
-                          :done-channel done-channel
-                          :branch "master"))
+    (cond
+
+      (= "StringReplaceSkill" (:command request))
+      ((-> finished
+           (run-editors)
+           (api/create-ref-from-first-linked-repo)
+           (api/extract-linked-repos)
+           (api/extract-github-user-token)
+           (api/check-required-parameters {:name "glob-pattern"
+                                           :required true
+                                           :pattern ".*"
+                                           :validInput "**/*.md"}
+                                          {:name "expression"
+                                           :required true
+                                           :pattern ".*"
+                                           :validInput "s/<match>/<replace>/g"})
+           (api/extract-cli-parameters [[nil "--glob-pattern PATTERN" "glob pattern"]
+                                        [nil "--expression REGEX" "REGEX expression"]])
+           (api/set-message-id)) (assoc request
+                                   :done-channel done-channel
+                                   :branch "master"))
+
+      (contains? (:data request) :Push)
+      ((-> finished
+           #_(run-editors)
+           (log-attempt)
+           (api/extract-github-token)
+           (api/create-ref-from-push-event)) (assoc request
+                                               :done-channel done-channel
+                                               :glob-pattern "**/README.md"
+                                               :expression "s/from/to/g"))
+
+      :else
+      (go
+       (log/errorf "Unrecognized event %s" request)
+       (>! done-channel :done)))
     done-channel))
 
 (defn ^:export handler

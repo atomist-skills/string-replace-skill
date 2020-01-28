@@ -90,6 +90,7 @@
       data - Incoming Request #js object
       sendreponse - callback ([obj]) puts an outgoing message on the response topic"
   [data sendreponse]
+  (log/info "hello")
   (api/make-request
    data sendreponse
    (fn [request]

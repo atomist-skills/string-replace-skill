@@ -80,7 +80,7 @@
     (handler request)))
 
 (defn finished [ch-request]
-  (log/info "----> finished - string-replace skill")
+  (log/info "----> finished - string-replace skill " ch-request)
   (go (>! (:done-channel ch-request) :done)))
 
 (defn ^:export handler

@@ -19,13 +19,7 @@ subscription OnAnyPush {
                 ownerType
                 scmProvider {
                     credential {
-                        scopes
-                        id
                         secret
-                        owner {
-                            name
-                            login
-                        }
                     }
                     id
                     name

@@ -10,7 +10,7 @@ The user specifies a glob file pattern (e.g. `*.rb` ) to apply a string replacem
 
 ## Example
 
-Using this skill to keep this date synced with the last Commit:  wrong1
+Using this skill to keep this date synced with the last Commit:  wrong2
 
 ## Configuration
 

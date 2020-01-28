@@ -1,6 +1,6 @@
 (ns atomist.main
   (:require [cljs.pprint :refer [pprint]]
-            [cljs.core.async :refer [<! timeout chan]]
+            [cljs.core.async :refer [<! >! timeout chan]]
             [clojure.string :as s]
             [goog.crypt.base64 :as b64]
             [goog.string :as gstring]
@@ -48,7 +48,7 @@
           {:target-branch "master"
            :branch (str (random-uuid))
            :title "String Replace Skill running"
-           :body (gstring/format "Update %s/%s - running %s over %s"
+           :body (gstring/format "Update %s/%s - running %s over %s\n[atomist:edited]"
                                  (-> request :ref :owner)
                                  (-> request :ref :repo)
                                  (:expression request)
@@ -57,6 +57,22 @@
                                                          (-> request :ref :owner)
                                                          (-> request :ref :repo))))
      (handler request))))
+
+(defn skip-if-atomist-edited
+  [handler]
+  (fn [request]
+    (if (s/includes? (-> request :data :Push first :after :message) "[atomist:edited]")
+      (do
+        (log/info "skipping Push because after commit was made by Atomist")
+        (go (>! (:done-channel request) :done)))
+      (handler request))))
+
+(defn add-skill-config
+  [handler]
+  (fn [request]
+    (handler (assoc request
+               :glob-pattern "**/README.md"
+               :expression "(with the last commit:  )\\S*/$1elephants/g"))))
 
 (defn log-attempt [handler]
   (fn [request]
@@ -67,48 +83,6 @@
   (log/info "----> finished - string-replace skill")
   (go (>! (:done-channel ch-request) :done)))
 
-(defn process-request
-  "process the request pipeline for any events arriving in this skill"
-  [request]
-  (let [done-channel (chan)]
-    (cond
-
-      (= "StringReplaceSkill" (:command request))
-      ((-> finished
-           (run-editors)
-           (api/create-ref-from-first-linked-repo)
-           (api/extract-linked-repos)
-           (api/extract-github-user-token)
-           (api/check-required-parameters {:name "glob-pattern"
-                                           :required true
-                                           :pattern ".*"
-                                           :validInput "**/*.md"}
-                                          {:name "expression"
-                                           :required true
-                                           :pattern ".*"
-                                           :validInput "s/<match>/<replace>/g"})
-           (api/extract-cli-parameters [[nil "--glob-pattern PATTERN" "glob pattern"]
-                                        [nil "--expression REGEX" "REGEX expression"]])
-           (api/set-message-id)) (assoc request
-                                   :done-channel done-channel
-                                   :branch "master"))
-
-      (contains? (:data request) :Push)
-      ((-> finished
-           #_(run-editors)
-           (log-attempt)
-           (api/extract-github-token)
-           (api/create-ref-from-push-event)) (assoc request
-                                               :done-channel done-channel
-                                               :glob-pattern "**/README.md"
-                                               :expression "s/from/to/g"))
-
-      :else
-      (go
-       (log/errorf "Unrecognized event %s" request)
-       (>! done-channel :done)))
-    done-channel))
-
 (defn ^:export handler
   "handler
     must return a Promise - we don't do anything with the value
@@ -116,6 +90,41 @@
       data - Incoming Request #js object
       sendreponse - callback ([obj]) puts an outgoing message on the response topic"
   [data sendreponse]
-  (promise/chan->promise
-   (process-request (assoc (js->clj data :keywordize-keys true)
-                      :sendreponse sendreponse))))
+  (api/make-request
+   data sendreponse
+   (fn [request]
+     (cond
+
+       ;; Invoked by Command Handler (test out the regex from slack)
+       (= "StringReplaceSkill" (:command request))
+       ((-> finished
+            (run-editors)
+            (api/create-ref-from-first-linked-repo)
+            (api/extract-linked-repos)
+            (api/extract-github-user-token)
+            (api/check-required-parameters {:name "glob-pattern"
+                                            :required true
+                                            :pattern ".*"
+                                            :validInput "**/*.md"}
+                                           {:name "expression"
+                                            :required true
+                                            :pattern ".*"
+                                            :validInput "s/<match>/<replace>/g"})
+            (api/extract-cli-parameters [[nil "--glob-pattern PATTERN" "glob pattern"]
+                                         [nil "--expression REGEX" "REGEX expression"]])
+            (api/set-message-id)) (assoc request :branch "master"))
+
+       ;; Push Event (try out config parameters)
+       (contains? (:data request) :Push)
+       ((-> finished
+            (run-editors)
+            (log-attempt)
+            (api/extract-github-token)
+            (api/create-ref-from-push-event)
+            (add-skill-config)
+            (skip-if-atomist-edited)) request)
+
+       :else
+       (go
+        (log/errorf "Unrecognized event %s" request)
+        (>! (:done-channel request) :done))))))

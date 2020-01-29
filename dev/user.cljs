@@ -5,6 +5,7 @@
 (enable-console-print!)
 
 (def token (.. js/process -env -API_KEY_SLIMSLENDERSLACKS_PROD))
+(def github-token (.. js/process -env -GITHUB_TOKEN))
 
 (defn fake-handler [& args]
   (log/info "args " args))
@@ -13,11 +14,14 @@
  ;; EVENT
  (.catch
   (.then
-   (atomist.main/handler #js {:data {:Push [{:branch "0073c5ea-954e-40fc-8984-284f53e60442"
-                                             :repo {:name "view-service"
-                                                    :org {:owner "atomisthq"
+   (atomist.main/handler #js {:data {:Push [{:branch "master"
+                                             :repo {:name "string-replace-skill"
+                                                    :org {:owner "atomist-skills"
                                                           :scmProvider {:providerId "zjlmxjzwhurspem"
-                                                                        :credential {:secret "token"}}}}}]}}
+                                                                        :credential {:secret github-token}}}}
+                                             :after {:message ""}}]}
+                              :secrets [{:uri "atomist://api-key" :value token}]
+                              :extensions [:team_id "T095SFFBK"]}
                          fake-handler)
    (fn [v] (log/info "value " v)))
   (fn [error] (log/error "error " error)))

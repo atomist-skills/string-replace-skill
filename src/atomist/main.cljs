@@ -17,15 +17,18 @@
   "content - string to update"
   (let [[_ pattern replace] (re-find #"s/(.*)/(.*)/g" s)]
     (fn [content]
-      (s/replace content (re-pattern pattern) replace))))
+      (s/replace-all content (re-pattern pattern) replace))))
 
 (defn compile-simple-content-editor
   "use the sdm model"
   [request content-editor]
   (fn [f]
     (go
-     (let [content (<! (sdm/get-content f))]
-       (<! (sdm/set-content f (content-editor content))))
+     (let [content (<! (sdm/get-content f))
+           new-content (content-editor content)]
+       (if (= content new-content)
+         (log/info "content not changed"))
+       (<! (sdm/set-content f new-content)))
      true)))
 
 (defn run-editors
@@ -61,7 +64,7 @@
 (defn skip-if-atomist-edited
   [handler]
   (fn [request]
-    (if (s/includes? (-> request :data :Push first :after :message) "[atomist:edited]")
+    (if (and (-> request :data :Push first :after :message) (s/includes? (-> request :data :Push first :after :message) "[atomist:edited]"))
       (do
         (log/info "skipping Push because after commit was made by Atomist")
         (go (>! (:done-channel request) :done)))
@@ -72,7 +75,7 @@
   (fn [request]
     (handler (assoc request
                :glob-pattern "**/README.md"
-               :expression "(with the last commit:  )\\S*/$1elephants/g"))))
+               :expression "s/(with the last Commit:  )\\S*/$1elephants/g"))))
 
 (defn log-attempt [handler]
   (fn [request]

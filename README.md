@@ -10,7 +10,8 @@ The user specifies a glob file pattern (e.g. `*.rb` ) to apply a string replacem
 
 ## Example
 
-Using this skill to ensure that the last word of this sentence is always "elephants" the last Commit:  elephants\n
+Using this skill to ensure that the last word of this sentence is always "elephants" the last Commit:  elephants
+
 This uses the regex expression `s/(with the last Commit:  )\\S*/$1elephants/g`.
 
 ## Configuration

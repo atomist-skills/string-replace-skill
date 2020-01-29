@@ -38,8 +38,8 @@ skill:
   runtime:
     name: nodejs10
     entry_point: eventhandler
-    memory: 256
-    timeout: 60
+    memory: 1024
+    timeout: 120
 
 commands:
 - name: StringReplaceSkill

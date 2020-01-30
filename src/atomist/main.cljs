@@ -82,10 +82,6 @@
     (log/infof "Push Request %s over %s on %s" (:expression request) (:glob-pattern request) (:ref request))
     (handler request)))
 
-(defn finished [ch-request]
-  (log/info "----> finished - string-replace skill " ch-request)
-  (go (>! (:done-channel ch-request) :done)))
-
 (defn ^:export handler
   "handler
     must return a Promise - we don't do anything with the value
@@ -93,15 +89,15 @@
       data - Incoming Request #js object
       sendreponse - callback ([obj]) puts an outgoing message on the response topic"
   [data sendreponse]
-  (log/info "hello")
   (api/make-request
-   data sendreponse
+   data
+   sendreponse
    (fn [request]
      (cond
 
        ;; Invoked by Command Handler (test out the regex from slack)
        (= "StringReplaceSkill" (:command request))
-       ((-> finished
+       ((-> (api/finished :message "CommandHandler")
             (run-editors)
             (api/create-ref-from-first-linked-repo)
             (api/extract-linked-repos)
@@ -120,7 +116,7 @@
 
        ;; Push Event (try out config parameters)
        (contains? (:data request) :Push)
-       ((-> finished
+       ((-> (api/finished :message "Push event")
             (run-editors)
             (log-attempt)
             (api/extract-github-token)
@@ -131,4 +127,4 @@
        :else
        (go
         (log/errorf "Unrecognized event %s" request)
-        (>! (:done-channel request) :done))))))
+        (api/finish request))))))

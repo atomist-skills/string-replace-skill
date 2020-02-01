@@ -42,6 +42,23 @@ skill:
     timeout: 120
 
 commands:
-- name: StringReplaceSkill
-  description: "Trigger the StringReplaceSkill on a linked Repo"
-  pattern: "^string-replace-skill.*$"
+  - name: StringReplaceSkill
+    description: "Trigger the StringReplaceSkill on a linked Repo"
+    pattern: "^string-replace-skill.*$"
+
+parameters:
+  - repoFilters:
+      description: "The set of Repositories for this String Replace rule."
+      displayName: "Repository Scope"
+      name: "scope"
+      required: false
+  - string:
+      description: "The String replace regular expression that should be applied (in the form `s/.../replace/g`)"
+      displayName: "Regular Expression"
+      name: "expression"
+      required: true
+  - string:
+      description: "Pattern for Repository files where this rules should be applied."
+      displayName: "Glob Pattern"
+      name: "glob-pattern"
+      required: true

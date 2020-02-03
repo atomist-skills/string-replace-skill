@@ -73,11 +73,15 @@
 (defn add-skill-config
   [handler]
   (fn [request]
-    (log/info "check event parameters ")
-    (log/info (str request))
-    (handler (assoc request
-               :glob-pattern "**/README.md"
-               :expression "s/(with the last Commit:  )\\S*/$1elephants/g"))))
+    (log/infof "Skill Config:  %s" (json/clj->json (:configurations request)))
+    (let [configuration (-> request :configurations first)]
+      (handler (assoc request
+                 :glob-pattern (or
+                                (->> configuration :parameters (filter #(= "glob-pattern" (:name %))) first)
+                                "**/README.md")
+                 :expression (or
+                              (->> configuration :parameters (filter #(= "expression" (:name %))) first)
+                              "s/(with the last Commit:  )\\S*/$1elephants/g"))))))
 
 (defn log-attempt [handler]
   (fn [request]

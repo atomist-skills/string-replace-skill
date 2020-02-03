@@ -17,7 +17,7 @@
 skill:
   name: "atomist/string-replace-skill"
   title: String Replace
-  version: "0.2.1"
+  version: "0.2.2"
   author: Atomist
   description: Run a Regex String replace editor across a codebase.
   long_description: |
@@ -45,20 +45,3 @@ commands:
   - name: StringReplaceSkill
     description: "Trigger the StringReplaceSkill on a linked Repo"
     pattern: "^string-replace-skill.*$"
-
-#parameters:
-#  - repoFilters:
-#      description: "The set of Repositories for this String Replace rule."
-#      displayName: "Repository Scope"
-#      name: "scope"
-#      required: false
-#  - string:
-#      description: "The String replace regular expression that should be applied (in the form `s/.../replace/g`)"
-#      displayName: "Regular Expression"
-#      name: "expression"
-#      required: true
-#  - string:
-#      description: "Pattern for Repository files where this rules should be applied."
-#      displayName: "Glob Pattern"
-#      name: "glob-pattern"
-#      required: true

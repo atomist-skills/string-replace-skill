@@ -42,6 +42,6 @@ skill:
     timeout: 120
 
 commands:
-- name: StringReplaceSkill
-  description: "Trigger the StringReplaceSkill on a linked Repo"
-  pattern: "^string-replace-skill.*$"
+  - name: StringReplaceSkill
+    description: "Trigger the StringReplaceSkill on a linked Repo"
+    pattern: "^string-replace-skill.*$"

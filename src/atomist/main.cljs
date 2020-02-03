@@ -73,6 +73,8 @@
 (defn add-skill-config
   [handler]
   (fn [request]
+    (log/info "check event parameters ")
+    (log/info (str request))
     (handler (assoc request
                :glob-pattern "**/README.md"
                :expression "s/(with the last Commit:  )\\S*/$1elephants/g"))))

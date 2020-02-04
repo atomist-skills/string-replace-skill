@@ -77,10 +77,10 @@
     (let [configuration (-> request :configurations first)]
       (handler (assoc request
                  :glob-pattern (or
-                                (->> configuration :parameters (filter #(= "glob-pattern" (:name %))) first)
+                                (->> configuration :parameters (filter #(= "glob-pattern" (:name %))) first :value)
                                 "**/README.md")
                  :expression (or
-                              (->> configuration :parameters (filter #(= "expression" (:name %))) first)
+                              (->> configuration :parameters (filter #(= "expression" (:name %))) first :value)
                               "s/(with the last Commit:  )\\S*/$1elephants/g"))))))
 
 (defn log-attempt [handler]

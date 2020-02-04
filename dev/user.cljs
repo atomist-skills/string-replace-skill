@@ -4,7 +4,7 @@
 
 (enable-console-print!)
 
-(def token (.. js/process -env -API_KEY_SLIMSLENDERSLACKS_PROD))
+(def token (.. js/process -env -API_KEY_SLIMSLENDERSLACKS_STAGING))
 (def github-token (.. js/process -env -GITHUB_TOKEN))
 
 (defn fake-handler [& args]
@@ -12,28 +12,34 @@
 
 (comment
  ;; EVENT
+ ;; - needs both API_KEY and github token in scmProvider credential
  (.catch
   (.then
    (atomist.main/handler #js {:data {:Push [{:branch "master"
-                                             :repo {:name "string-replace-skill"
-                                                    :org {:owner "atomist-skills"
+                                             :repo {:name "elephants"
+                                                    :org {:owner "atomisthqa"
                                                           :scmProvider {:providerId "zjlmxjzwhurspem"
                                                                         :credential {:secret github-token}}}}
                                              :after {:message ""}}]}
                               :secrets [{:uri "atomist://api-key" :value token}]
-                              :extensions [:team_id "T095SFFBK"]}
+                              :configurations [{:parameters [{:name "expression" :value "s/baboons/whales/g"}
+                                                             {:name "glob-pattern" :value "README.md"}]}]
+                              :extensions [:team_id "AK748NQC5"]}
                          fake-handler)
    (fn [v] (log/info "value " v)))
-  (fn [error] (log/error "error " error)))
+  (fn [error] (log/info "error " error)))
 
  ;; COMMAND HANDLER
+ ;;   - needs only API_KEY
+ ;;   - extracts repo from channel
+ ;;   - extracts github token from ResourceUser
  (.catch
   (.then
    (atomist.main/handler #js {:command "StringReplaceSkill"
-                              :source {:slack {:channel {:id "C19ALS7P1"}
-                                               :user {:id "U09MZ63EW"}}}
-                              :team {:id "T095SFFBK"}
-                              :parameters [{:name "expression" :value "s/data streams/whole elephants/g"}]
+                              :source {:slack {:channel {:id "CTGGW07B6"}
+                                               :user {:id "UDF0NFB5M"}}}
+                              :team {:id "AK748NQC5"}
+                              :parameters [{:name "expression" :value "s/whales/elephants/g"}]
                               :raw_message "string-replace-skill --glob-pattern=README.md"
                               :secrets [{:uri "atomist://api-key" :value token}]}
                          fake-handler)

@@ -22,8 +22,10 @@
                                                                         :credential {:secret github-token}}}}
                                              :after {:message ""}}]}
                               :secrets [{:uri "atomist://api-key" :value token}]
-                              :configurations [{:parameters [{:name "expression" :value "s/baboons/whales/g"}
-                                                             {:name "glob-pattern" :value "README.md"}]}]
+                              :configuration {:name "default"
+                                              :enabled true
+                                              :parameters [{:name "expression" :value "s/whales/elephants/g"}
+                                                           {:name "glob-pattern" :value "README.md"}]}
                               :extensions [:team_id "AK748NQC5"]}
                          fake-handler)
    (fn [v] (log/info "value " v)))

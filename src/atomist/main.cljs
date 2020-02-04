@@ -61,30 +61,6 @@
                                                          (-> request :ref :repo))))
      (handler request))))
 
-(defn skip-if-atomist-edited
-  [handler]
-  (fn [request]
-    (if (and (-> request :data :Push first :after :message) (s/includes? (-> request :data :Push first :after :message) "[atomist:edited]"))
-      (do
-        (log/info "skipping Push because after commit was made by Atomist")
-        (api/finish request))
-      (handler request))))
-
-(defn add-skill-config
-  [handler]
-  (fn [request]
-    (let [configuration (or
-                         (-> request :configurations first)
-                         (-> request :configuration))]
-      (log/infof "found configuration %s (%s)" (:name configuration) (:enabled configuration))
-      (if (:enabled configuration)
-        (handler (assoc request
-                   :glob-pattern (->> configuration :parameters (filter #(= "glob-pattern" (:name %))) first :value)
-                   :expression (->> configuration :parameters (filter #(= "expression" (:name %))) first :value)))
-        (do
-          (log/info "configuration not enabled")
-          (api/finish request))))))
-
 (defn log-attempt [handler]
   (fn [request]
     (log/infof "Push Request %s over %s on %s" (:expression request) (:glob-pattern request) (:ref request))
@@ -129,8 +105,8 @@
             (log-attempt)
             (api/extract-github-token)
             (api/create-ref-from-push-event)
-            (add-skill-config)
-            (skip-if-atomist-edited)) request)
+            (api/add-skill-config :glob-pattern :expression :schedule :scope)
+            (api/skip-push-if-atomist-edited)) request)
 
        :else
        (go

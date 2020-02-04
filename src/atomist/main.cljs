@@ -73,18 +73,17 @@
 (defn add-skill-config
   [handler]
   (fn [request]
-    (log/infof "Skill Config:  %s" (str (keys request)))
     (let [configuration (or
                          (-> request :configurations first)
                          (-> request :configuration))]
-      (log/info "found configuration " (:name configuration))
-      (handler (assoc request
-                 :glob-pattern (or
-                                (->> configuration :parameters (filter #(= "glob-pattern" (:name %))) first :value)
-                                "**/README.md")
-                 :expression (or
-                              (->> configuration :parameters (filter #(= "expression" (:name %))) first :value)
-                              "s/(with the last Commit:  )\\S*/$1elephants/g"))))))
+      (log/infof "found configuration %s (%s)" (:name configuration) (:enabled configuration))
+      (if (:enabled configuration)
+        (handler (assoc request
+                   :glob-pattern (->> configuration :parameters (filter #(= "glob-pattern" (:name %))) first :value)
+                   :expression (->> configuration :parameters (filter #(= "expression" (:name %))) first :value)))
+        (do
+          (log/info "configuration not enabled")
+          (api/finish request))))))
 
 (defn log-attempt [handler]
   (fn [request]

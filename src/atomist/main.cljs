@@ -67,14 +67,17 @@
     (if (and (-> request :data :Push first :after :message) (s/includes? (-> request :data :Push first :after :message) "[atomist:edited]"))
       (do
         (log/info "skipping Push because after commit was made by Atomist")
-        (go (>! (:done-channel request) :done)))
+        (api/finish :message "skipping Push because after commit was made by Atomist"))
       (handler request))))
 
 (defn add-skill-config
   [handler]
   (fn [request]
-    (log/infof "Skill Config:  %s" (json/clj->json (:configurations request)))
-    (let [configuration (-> request :configurations first)]
+    (log/infof "Skill Config:  %s" (str (keys request)))
+    (let [configuration (or
+                         (-> request :configurations first)
+                         (-> request :configuration))]
+      (log/info "found configuration " (:name configuration))
       (handler (assoc request
                  :glob-pattern (or
                                 (->> configuration :parameters (filter #(= "glob-pattern" (:name %))) first :value)

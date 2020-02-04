@@ -67,7 +67,7 @@
     (if (and (-> request :data :Push first :after :message) (s/includes? (-> request :data :Push first :after :message) "[atomist:edited]"))
       (do
         (log/info "skipping Push because after commit was made by Atomist")
-        (api/finish :message "skipping Push because after commit was made by Atomist"))
+        (api/finish request))
       (handler request))))
 
 (defn add-skill-config

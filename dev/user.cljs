@@ -23,7 +23,6 @@
                                              :after {:message ""}}]}
                               :secrets [{:uri "atomist://api-key" :value token}]
                               :configuration {:name "default"
-                                              :enabled true
                                               :parameters [{:name "expression" :value "s/whales/elephants/g"}
                                                            {:name "glob-pattern" :value "README.md"}]}
                               :extensions [:team_id "AK748NQC5"]}

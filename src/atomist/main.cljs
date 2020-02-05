@@ -42,24 +42,30 @@
   [handler]
   (fn [request]
     (log/infof "run editor %s over %s on %s" (:expression request) (:glob-pattern request) (-> request :ref))
-    (go
-     (<! (editors/perform-edits-in-PR
-          (compile-simple-content-editor request (editor (:expression request)))
-          (:glob-pattern request)
-          (:token request)
-          (:ref request)
-          {:target-branch "master"
-           :branch (str (random-uuid))
-           :title "String Replace Skill running"
-           :body (gstring/format "Update %s/%s - running %s over %s\n[atomist:edited]"
-                                 (-> request :ref :owner)
-                                 (-> request :ref :repo)
-                                 (:expression request)
-                                 (:glob-pattern request))}))
-     (<! (api/simple-message request (goog.string/format "edited %s/%s"
-                                                         (-> request :ref :owner)
-                                                         (-> request :ref :repo))))
-     (handler request))))
+    (cond
+      (and (:expression request) (:glob-pattern request))
+      (go
+       (<! (editors/perform-edits-in-PR
+            (compile-simple-content-editor request (editor (:expression request)))
+            (:glob-pattern request)
+            (:token request)
+            (:ref request)
+            {:target-branch "master"
+             :branch (str (random-uuid))
+             :title "String Replace Skill running"
+             :body (gstring/format "Update %s/%s - running %s over %s\n[atomist:edited]"
+                                   (-> request :ref :owner)
+                                   (-> request :ref :repo)
+                                   (:expression request)
+                                   (:glob-pattern request))}))
+       (<! (api/simple-message request (goog.string/format "edited %s/%s"
+                                                           (-> request :ref :owner)
+                                                           (-> request :ref :repo))))
+       (handler request))
+      :else
+      (do
+        (log/warn "run-editors requires both a glob-pattern and an expression")
+        (api/finish request)))))
 
 (defn log-attempt [handler]
   (fn [request]

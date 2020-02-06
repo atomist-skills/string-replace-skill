@@ -27,7 +27,7 @@
      (let [content (<! (sdm/get-content f))
            new-content (content-editor content)]
        (if (= content new-content)
-         (log/info "content not changed"))
+         (log/info "content not changed - "))
        (<! (sdm/set-content f new-content)))
      true)))
 

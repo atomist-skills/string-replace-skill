@@ -17,7 +17,7 @@
 skill:
   name: "atomist/string-replace-skill"
   title: String Replace
-  version: "0.2.12"
+  version: "0.2.13"
   author: Atomist
   description: Run a Regex String replace editor across a codebase.
   long_description: |
@@ -49,13 +49,13 @@ commands:
 
 parameters:
   - string:
-      description: "Pattern for Repository files where this rules should be applied."
-      displayName: "Glob Pattern"
+      description: "Enter comma-separated glob patterns.  If no glob pattern is entered, the string replacement will run on all the files in the selected repositories."
+      displayName: "Replace in files"
       name: "glob-pattern"
       required: false
   - string:
-      description: "The String replace regular expression that should be applied (in the form `s/.../replace/g`)"
-      displayName: "Regular Expression"
+      description: "Enter string replacement expression"
+      displayName: "Substitution Expression"
       name: "expression"
       required: true
 #  - schedule:
@@ -65,6 +65,6 @@ parameters:
 #      required: false
   - repoFilters:
       description: "The set of Repositories for this String Replace rule."
-      displayName: "Repository Scope"
+      displayName: "Which repositories"
       name: "scope"
       required: false

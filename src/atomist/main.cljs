@@ -45,9 +45,9 @@
     (cond
       (and (:expression request) (:glob-pattern request))
       (go
-       (<! (editors/perform-edits-in-PR
+       (<! (editors/perform-edits-in-PR-with-multiple-glob-patterns
             (compile-simple-content-editor request (editor (:expression request)))
-            (:glob-pattern request)
+            (s/split (:glob-pattern request) #",")
             (:token request)
             (:ref request)
             {:target-branch "master"
@@ -87,7 +87,7 @@
 
        ;; Invoked by Command Handler (test out the regex from slack)
        (= "StringReplaceSkill" (:command request))
-       ((-> (api/finished :message "CommandHandler")
+       ((-> (api/finished :message "CommandHandler" :success "StringReplaceSkill CommandHandler completed successfully")
             (run-editors)
             (api/create-ref-from-first-linked-repo)
             (api/extract-linked-repos)
@@ -106,7 +106,7 @@
 
        ;; Push Event (try out config parameters)
        (contains? (:data request) :Push)
-       ((-> (api/finished :message "Push event")
+       ((-> (api/finished :message "Push event" :success "StringReplaceSkill handled Push event successfully")
             (run-editors)
             (log-attempt)
             (api/extract-github-token)

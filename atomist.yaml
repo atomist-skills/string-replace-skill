@@ -17,7 +17,7 @@
 skill:
   name: "atomist/string-replace-skill"
   title: String Replace
-  version: 0.2.14
+  version: 0.2.15
   author: Atomist
   description: Run a Regex String replace editor across a codebase.
   long_description: |

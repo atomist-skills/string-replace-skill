@@ -65,7 +65,7 @@
       :else
       (do
         (log/warn "run-editors requires both a glob-pattern and an expression")
-        (api/finish request)))))
+        (api/finish request :failure "configuration did not contain `expression` and `glob-pattern`")))))
 
 (defn log-attempt [handler]
   (fn [request]

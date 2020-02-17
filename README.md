@@ -1,5 +1,6 @@
 # `@atomist/string-replace-skill`
 
+
 ## Problem
 
 As a developer, I want to make bulk replacement of strings across many files in many repos, so that I can easily do things like rename projects, update copyright notices and other common tasks.

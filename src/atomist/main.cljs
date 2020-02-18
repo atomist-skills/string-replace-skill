@@ -72,6 +72,9 @@
     (log/infof "Push Request %s over %s on %s" (:expression request) (:glob-pattern request) (:ref request))
     (handler request)))
 
+(defn pr-link [request]
+  (gstring/format "https://github.com/%s/%s/pulls" (-> request :ref :owner) (-> request :ref :repo)))
+
 (defn ^:export handler
   "handler
     must return a Promise - we don't do anything with the value
@@ -87,7 +90,8 @@
 
        ;; Invoked by Command Handler (test out the regex from slack)
        (= "StringReplaceSkill" (:command request))
-       ((-> (api/finished :message "CommandHandler" :success "StringReplaceSkill CommandHandler completed successfully")
+       ((-> (api/finished :message "CommandHandler"
+                          :success (gstring/format "**StringReplaceSkill** CommandHandler completed successfully:  [PR raised](%s)" (pr-link request)))
             (run-editors)
             (api/create-ref-from-first-linked-repo)
             (api/extract-linked-repos)

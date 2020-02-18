@@ -110,7 +110,8 @@
 
        ;; Push Event (try out config parameters)
        (contains? (:data request) :Push)
-       ((-> (api/finished :message "Push event" :success "StringReplaceSkill handled Push event successfully")
+       ((-> (api/finished :message "Push event"
+                          :success (gstring/format "**StringReplaceSkill** handled Push Event:  [PR raised](%s)" (pr-link request)))
             (run-editors)
             (log-attempt)
             (api/extract-github-token)

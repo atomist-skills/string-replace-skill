@@ -91,7 +91,8 @@
        ;; Invoked by Command Handler (test out the regex from slack)
        (= "StringReplaceSkill" (:command request))
        ((-> (api/finished :message "CommandHandler"
-                          :success (gstring/format "**StringReplaceSkill** CommandHandler completed successfully:  [PR raised](%s)" (pr-link request)))
+                          :send-status (fn [request]
+                                         (gstring/format "**StringReplaceSkill** CommandHandler completed successfully:  [PR raised](%s)" (pr-link request))))
             (run-editors)
             (api/create-ref-from-first-linked-repo)
             (api/extract-linked-repos)
@@ -111,7 +112,8 @@
        ;; Push Event (try out config parameters)
        (contains? (:data request) :Push)
        ((-> (api/finished :message "Push event"
-                          :success (gstring/format "**StringReplaceSkill** handled Push Event:  [PR raised](%s)" (pr-link request)))
+                          :send-status (fn [request]
+                                         (gstring/format "**StringReplaceSkill** handled Push Event:  [PR raised](%s)" (pr-link request))))
             (run-editors)
             (log-attempt)
             (api/extract-github-token)

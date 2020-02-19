@@ -45,7 +45,7 @@ skill:
 commands:
   - name: StringReplaceSkill
     description: "Trigger the StringReplaceSkill on a linked Repo"
-    pattern: "^string-replace-skill.*$"
+    pattern: "^sed .*$"
 
 parameters:
   - string:

@@ -1,25 +1,48 @@
 # `@atomist/string-replace-skill`
 
+On every Push, run a search and replace regular expression on a select set of files and open a Pull Request with any changes.  This skill
+also supports a Slack integration to request the search and replace operation from Slack.
 
-## Problem
+## Usage
 
-As a developer, I want to make bulk replacement of strings across many files in many repos, so that I can easily do things like rename projects, update copyright notices and other common tasks.
+Each configuration of this skill should define a search replace expression and a glob expression to define which files
+should be included in the search.
 
-## What it does
+| Name         | Type   | Required | Notes |
+| :---         | :----  | :---  | :------ | 
+| glob-pattern | `Text` | false | By default, if no glob pattern provided, the string replacement will run on all files in the repo |
+| expression   | `Text` | true |  |
+| Scope | `Org & Repo Selection` | true | Choose the scope of the String-Replace Operation |
 
-The user specifies a glob file pattern (e.g. `*.rb` ) to apply a string replacement to, and a string replacement regular expression (e.g. `s/<match>/replace/`). When a push happens on a repo, the string replacement skill will be triggered.
+Each configuration can configure a different set of relevant Repositories.  Scopes can also overlap, but if multiple expressions
+match, separate Pull Requests will be opened (one for each expression).
 
 ## Example
 
-Using this skill to ensure that the last word of this sentence is always "elephants" -  with the last Commit:  elephants
+Search all html files in the repository for the regix `search`.  Globally replace occurrences of this pattern with the string `replace`.
 
-## Configuration
+* `glob-pattern=**/*.html`
+* `expression=s/search/replace/g`
 
-| Name                   | Value        | Type   | Required | Notes |
-| :---                   | :----        | :----  | :---  | :------ | 
-| Files to apply replace | Glob Pattern | `Text` | false | By default, if no glob pattern provided, the string replacement will run on all files in the repo |
-| String replacement pattern | String Replacement (e.g. s/(([c]\)\s*)2019/$12020/ig ) | `Text` | true |  |
-| Scope | Selected GitHub Organization(s) and/or Repositories | `Org & Repo Selection` | false | By default, scope will include all organizations and repos available in the workspace  |
+## Integrations
+
+* `GitHub` - requires the Atomist GitHub application installed in some Orgs
+* `Slack` - if the Atomist slack app is installed, this skill will notify the linked Slack channel 
+            whenever a PR is raised for a search and replace expression.
+            
+## Collaborations
+
+This skill works well with the `GitHub Notifications`, `GitHub Auto-merge pull request`, and `GitHub Auto-rebase pull request` skills.
+
+## Slack Commands
+
+This skill also adds a new command to your Slack team:
+
+`@atomist sed --configuration=example1`
+
+If you run this command from a Slack channel, with a linked Repo, it will lookup a regular expression and glob-pattern
+from the `config-name` of this skill.  As long as this configuration exists, the skill will apply the search and replace operation, 
+and then open a PR if there are any changes.
 
 ---
 

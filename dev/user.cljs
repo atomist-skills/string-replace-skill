@@ -40,8 +40,11 @@
                               :source {:slack {:channel {:id "CTGGW07B6"}
                                                :user {:id "UDF0NFB5M"}}}
                               :team {:id "AK748NQC5"}
-                              :parameters [{:name "expression" :value "s/whales/elephants/g"}]
-                              :raw_message "string-replace-skill --glob-pattern=README.md"
+                              :configurations [{:name "elephants"
+                                                :enabled true
+                                                :parameters [{:name "glob-pattern" :value "README.md"}
+                                                             {:name "expression" :value "s/elephant/whale/g"}]}]
+                              :raw_message "sed --configuration=elephants"
                               :secrets [{:uri "atomist://api-key" :value token}]}
                          fake-handler)
    (fn [v] (log/info "value " v)))

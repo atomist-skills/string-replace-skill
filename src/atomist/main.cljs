@@ -10,7 +10,8 @@
             [atomist.sdmprojectmodel :as sdm]
             [atomist.json :as json]
             [atomist.api :as api]
-            [atomist.promise :as promise])
+            [atomist.promise :as promise]
+            [atomist.github :as github])
   (:require-macros [cljs.core.async.macros :refer [go]]))
 
 (defn editor [s]
@@ -42,30 +43,32 @@
   [handler]
   (fn [request]
     (log/infof "run editor %s over %s on %s" (:expression request) (:glob-pattern request) (-> request :ref))
-    (cond
-      (and (:expression request) (:glob-pattern request))
-      (go
-       (<! (editors/perform-edits-in-PR-with-multiple-glob-patterns
-            (compile-simple-content-editor request (editor (:expression request)))
-            (s/split (:glob-pattern request) #",")
-            (:token request)
-            (:ref request)
-            {:target-branch "master"
-             :branch (str (random-uuid))
-             :title "String Replace Skill running"
-             :body (gstring/format "Update %s/%s - running %s over %s\n[atomist:edited]"
-                                   (-> request :ref :owner)
-                                   (-> request :ref :repo)
-                                   (:expression request)
-                                   (:glob-pattern request))}))
-       (<! (api/simple-message request (goog.string/format "edited %s/%s"
-                                                           (-> request :ref :owner)
-                                                           (-> request :ref :repo))))
-       (handler request))
-      :else
-      (do
-        (log/warn "run-editors requires both a glob-pattern and an expression")
-        (api/finish request :failure "configuration did not contain `expression` and `glob-pattern`")))))
+    (let [branch (str (random-uuid))]
+      (cond
+        (and (:expression request) (:glob-pattern request))
+        (go
+         (<! (editors/perform-edits-in-PR-with-multiple-glob-patterns
+              (compile-simple-content-editor request (editor (:expression request)))
+              (s/split (:glob-pattern request) #",")
+              (:token request)
+              (:ref request)
+              {:target-branch "master"
+               :branch (-> request :configuration :name)
+               :title "String Replace Skill running"
+               :body (gstring/format "Update %s/%s - running %s over %s\n[atomist:edited]"
+                                     (-> request :ref :owner)
+                                     (-> request :ref :repo)
+                                     (:expression request)
+                                     (:glob-pattern request))}))
+         (let [pullRequest (<! (github/pr-channel request branch))]
+           (log/info "pullRequest " pullRequest)
+           (handler (merge request
+                           (if-let [n (:number pullRequest)]
+                             {:pull-request-number n})))))
+        :else
+        (do
+          (log/warn "run-editors requires both a glob-pattern and an expression")
+          (api/finish request :failure "configuration did not contain `expression` and `glob-pattern`"))))))
 
 (defn log-attempt [handler]
   (fn [request]
@@ -73,7 +76,7 @@
     (handler request)))
 
 (defn pr-link [request]
-  (gstring/format "https://github.com/%s/%s/pulls" (-> request :ref :owner) (-> request :ref :repo)))
+  (gstring/format "https://github.com/%s/%s/pulls/%s" (-> request :ref :owner) (-> request :ref :repo) (or (-> request :pull-request-number) "")))
 
 (defn ^:export handler
   "handler
@@ -92,28 +95,28 @@
        (= "StringReplaceSkill" (:command request))
        ((-> (api/finished :message "CommandHandler"
                           :send-status (fn [request]
-                                         (gstring/format "**StringReplaceSkill** CommandHandler completed successfully:  [PR raised](%s)" (pr-link request))))
+                                         (if (:pull-request-number request)
+                                           (gstring/format "**StringReplaceSkill** CommandHandler completed successfully:  [PR raised](%s)" (pr-link request))
+                                           "CommandHandler completed without raising PullRequest")))
             (run-editors)
+            (api/add-skill-config-by-configuration-parameter :configuration :glob-pattern :expression :scope)
             (api/create-ref-from-first-linked-repo)
             (api/extract-linked-repos)
             (api/extract-github-user-token)
-            (api/check-required-parameters {:name "glob-pattern"
+            (api/check-required-parameters {:name "configuration"
                                             :required true
                                             :pattern ".*"
-                                            :validInput "**/*.md"}
-                                           {:name "expression"
-                                            :required true
-                                            :pattern ".*"
-                                            :validInput "s/<match>/<replace>/g"})
-            (api/extract-cli-parameters [[nil "--glob-pattern PATTERN" "glob pattern"]
-                                         [nil "--expression REGEX" "REGEX expression"]])
+                                            :validInput "must be a valid configuration name"})
+            (api/extract-cli-parameters [[nil "--configuration PATTERN" "existing configuration"]])
             (api/set-message-id)) (assoc request :branch "master"))
 
        ;; Push Event (try out config parameters)
        (contains? (:data request) :Push)
        ((-> (api/finished :message "Push event"
                           :send-status (fn [request]
-                                         (gstring/format "**StringReplaceSkill** handled Push Event:  [PR raised](%s)" (pr-link request))))
+                                         (if (:pull-request-number request)
+                                           (gstring/format "**StringReplaceSkill** handled Push Event:  [PR raised](%s)" (pr-link request))
+                                           "Push event handler completed without raising PullRequest")))
             (run-editors)
             (log-attempt)
             (api/extract-github-token)

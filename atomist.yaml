@@ -52,11 +52,13 @@ parameters:
       description: "Enter comma-separated glob patterns.  If no glob pattern is entered, the string replacement will run on all the files in the selected repositories."
       displayName: "Replace in files"
       name: "glob-pattern"
+      placeHolder: "README.md,**/*.html"
       required: false
   - string:
       description: "Enter string replacement expression"
       displayName: "Substitution Expression"
       name: "expression"
+      placeHolder: "s/search/replace/g"
       required: true
 #  - schedule:
 #      description: "Run this regex on every Push OR provide a cron schedule."

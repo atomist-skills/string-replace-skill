@@ -11,26 +11,45 @@
             [atomist.json :as json]
             [atomist.api :as api]
             [atomist.promise :as promise]
-            [atomist.github :as github])
+            [atomist.github :as github]
+            [cljs-node-io.proc :as proc]
+            [cljs-node-io.core :as io])
   (:require-macros [cljs.core.async.macros :refer [go]]))
 
-(defn editor [s]
+(defn file-stream-editor [s]
   "content - string to update"
-  (let [[_ pattern replace] (re-find #"s/(.*)/(.*)/g" s)]
-    (fn [content]
-      (s/replace-all content (re-pattern pattern) replace))))
+  (if (re-find #"s/(.*)/(.*)/g?" s)
+    (fn [f content]
+      (let [path (. ^js f -realPath)]
+        (log/infof "spawn sed on %s for file %s" s path)
+        (go
+         (let [[error stdout stderr] (<! (proc/aexec (gstring/format "sed '%s' %s" s path)))]
+           (if error
+             (do
+               (log/error stderr)
+               {:error stderr})
+             {:new-content (if (string? stdout)
+                             stdout
+                             (io/slurp stdout))})))))))
 
 (defn compile-simple-content-editor
-  "use the sdm model"
+  "create a file editor"
   [request content-editor]
   (fn [f]
     (go
      (let [content (<! (sdm/get-content f))
-           new-content (content-editor content)]
-       (if (= content new-content)
-         (log/info "content not changed - "))
-       (<! (sdm/set-content f new-content)))
+           {:keys [error new-content]} (<! (content-editor f content))]
+       (cond
+         (= content new-content)
+         (log/info "content not changed")
+         (and new-content (not error))
+         (<! (sdm/set-content f new-content))
+         :else
+         (log/errorf "error running stream editor: %s" error)))
      true)))
+
+(defn config->branch [s]
+  (-> s (s/replace-all #"\s" "")))
 
 (defn run-editors
   "run a conditional json editor on all files matching a glob
@@ -43,28 +62,29 @@
   [handler]
   (fn [request]
     (log/infof "run editor %s over %s on %s" (:expression request) (:glob-pattern request) (-> request :ref))
-    (let [branch (str (random-uuid))]
+    (let [branch (-> request :configuration :name (config->branch))]
       (cond
         (and (:expression request) (:glob-pattern request))
-        (go
-         (<! (editors/perform-edits-in-PR-with-multiple-glob-patterns
-              (compile-simple-content-editor request (editor (:expression request)))
-              (s/split (:glob-pattern request) #",")
-              (:token request)
-              (:ref request)
-              {:target-branch "master"
-               :branch (-> request :configuration :name)
-               :title "String Replace Skill running"
-               :body (gstring/format "Update %s/%s - running %s over %s\n[atomist:edited]"
-                                     (-> request :ref :owner)
-                                     (-> request :ref :repo)
-                                     (:expression request)
-                                     (:glob-pattern request))}))
-         (let [pullRequest (<! (github/pr-channel request branch))]
-           (log/info "pullRequest " pullRequest)
-           (handler (merge request
-                           (if-let [n (:number pullRequest)]
-                             {:pull-request-number n})))))
+        (if-let [sed (file-stream-editor (:expression request))]
+          (go
+           (<! (editors/perform-edits-in-PR-with-multiple-glob-patterns
+                (compile-simple-content-editor request sed)
+                (s/split (:glob-pattern request) #",")
+                (:token request)
+                (:ref request)
+                {:target-branch "master"
+                 :branch branch
+                 :title "String Replace Skill running"
+                 :body (gstring/format "Update %s/%s - running %s over %s\n[atomist:edited]"
+                                       (-> request :ref :owner)
+                                       (-> request :ref :repo)
+                                       (:expression request)
+                                       (:glob-pattern request))}))
+           (let [pullRequest (<! (github/pr-channel request branch))]
+             (handler (merge request
+                             (if-let [n (:number pullRequest)]
+                               {:pull-request-number n})))))
+          (api/finish request :failure (gstring/format "this skill will only run expressions of the kind s/.*/.*/g?" (:expression request))))
         :else
         (do
           (log/warn "run-editors requires both a glob-pattern and an expression")
@@ -76,7 +96,7 @@
     (handler request)))
 
 (defn pr-link [request]
-  (gstring/format "https://github.com/%s/%s/pulls/%s" (-> request :ref :owner) (-> request :ref :repo) (or (-> request :pull-request-number) "")))
+  (gstring/format "https://github.com/%s/%s/pull/%s" (-> request :ref :owner) (-> request :ref :repo) (or (-> request :pull-request-number) "")))
 
 (defn ^:export handler
   "handler

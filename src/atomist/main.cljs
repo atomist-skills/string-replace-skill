@@ -13,17 +13,71 @@
             [atomist.promise :as promise]
             [atomist.github :as github]
             [cljs-node-io.proc :as proc]
-            [cljs-node-io.core :as io])
+            [cljs-node-io.core :as io]
+            ["url-regex" :as regex])
   (:require-macros [cljs.core.async.macros :refer [go]]))
 
-(defn file-stream-editor [s]
+(def url-regex (regex))
+
+(defn run-regular-expressions
+  "middleware
+     clone and run regexes against the glob-pattern in the request
+
+     - expects that a Repo ref is already present in the request
+     - expects that this originated from a Command Handler request
+
+     Send two Chat messages with the data we've found."
+  [handler]
+  (fn [request]
+    (go
+     (let [data
+           (<! (sdm/do-with-shallow-cloned-project
+                (sdm/do-with-files
+                 (fn [f]
+                   (go
+                    {(. ^js f -realPath) (into [] (re-seq url-regex (<! (sdm/get-content f))))}))
+                 (:glob-pattern request))
+                (:token request)
+                (:ref request)))
+           file-matches (apply merge data)]
+       (<! (api/simple-message request (gstring/format "found %s urls over %s files"
+                                                       (reduce #(+ %1 (-> %2 vals first count)) 0 data)
+                                                       (count data))))
+       (<! (api/snippet-message request (json/->str file-matches) "application/json" "title"))
+       (handler request)))))
+
+(defn content-editor
+  "compile an editor
+     the editor uses a JavaScript RegEx to do a search and replace on the content in a File
+
+     content editor is (File String) => String"
+  [search-regex replace opts]
+  (fn [f content]
+    (let [p (re-pattern search-regex)]
+      (if (s/starts-with? opts "g")
+        (s/replace-all content p replace)
+        (s/replace content p replace)))))
+
+(defn file-stream-editor
+  "compile an editor
+    the editor uses sed to process a File
+
+    This only accepts s commands for sed
+    The only s options supported is g
+    The editor can be compiled in either basic or extended mode, and this impacts how sed is executed
+
+    stream editor is (File String) => String"
+  [s & {:keys [type]}]
   "content - string to update"
   (if (re-find #"s/(.*)/(.*)/g?" s)
     (fn [f content]
       (let [path (. ^js f -realPath)]
         (log/infof "spawn sed on %s for file %s" s path)
         (go
-         (let [[error stdout stderr] (<! (proc/aexec (gstring/format "sed '%s' %s" s path)))]
+         (let [[error stdout stderr] (<! (proc/aexec (gstring/format "sed %s '%s' %s"
+                                                                     (if (= type "extended") "-E" "")
+                                                                     s
+                                                                     path)))]
            (if error
              (do
                (log/error stderr)
@@ -33,12 +87,15 @@
                              (io/slurp stdout))})))))))
 
 (defn compile-simple-content-editor
-  "create a file editor"
-  [request content-editor]
+  "compile a file editor
+    params
+      request
+      content-editor (File String) => String"
+  [request editor]
   (fn [f]
     (go
      (let [content (<! (sdm/get-content f))
-           {:keys [error new-content]} (<! (content-editor f content))]
+           {:keys [error new-content]} (<! (editor f content))]
        (cond
          (= content new-content)
          (log/info "content not changed")
@@ -52,7 +109,8 @@
   (-> s (s/replace-all #"\s" "")))
 
 (defn run-editors
-  "run a conditional json editor on all files matching a glob
+  "middleware
+   run a conditional json editor on all files matching a glob
    relies on the ch-request containing
      - :ref with GitHubRef of the repo to operate on - create-ref middleware
      - :token for Github - api/extract-github-user-token middleware
@@ -65,10 +123,17 @@
     (let [branch (-> request :configuration :name (config->branch))]
       (cond
         (and (:expression request) (:glob-pattern request))
-        (if-let [sed (file-stream-editor (:expression request))]
+        (if-let [editor (cond
+                          (#{"basic" "extended"} (:parserType request))
+                          (file-stream-editor (:expression request) :type (:parserType request))
+                          (= "perl" (:parserType request))
+                          (let [[_ search replace opts] (re-find #"s/(.*)/(.*)/(g?)" (:expression request))]
+                            (content-editor search replace opts))
+                          :else
+                          (file-stream-editor (:expression request)))]
           (go
            (<! (editors/perform-edits-in-PR-with-multiple-glob-patterns
-                (compile-simple-content-editor request sed)
+                (compile-simple-content-editor request editor)
                 (s/split (:glob-pattern request) #",")
                 (:token request)
                 (:ref request)
@@ -111,6 +176,16 @@
    (fn [request]
      (cond
 
+       ;; Invoked by Command Handler (report on certain regexes in the codebase)
+       (= "FindUrlSkill" (:command request))
+       ((-> (api/finished :message "successfully ran FindUrlSkill")
+            (run-regular-expressions)
+            (api/create-ref-from-first-linked-repo)
+            (api/extract-linked-repos)
+            (api/extract-github-user-token)
+            (api/extract-cli-parameters [[nil "--url" nil]])
+            (api/set-message-id)) request)
+
        ;; Invoked by Command Handler (test out the regex from slack)
        (= "StringReplaceSkill" (:command request))
        ((-> (api/finished :message "CommandHandler"
@@ -141,7 +216,7 @@
             (log-attempt)
             (api/extract-github-token)
             (api/create-ref-from-push-event)
-            (api/add-skill-config :glob-pattern :expression :schedule :scope)
+            (api/add-skill-config :glob-pattern :expression :schedule :scope :parserType)
             (api/skip-push-if-atomist-edited)) request)
 
        :else

@@ -52,4 +52,18 @@
                               :secrets [{:uri "atomist://api-key" :value token}]}
                          fake-handler)
    (fn [v] (log/info "value " v)))
+  (fn [error] (log/error "error " error)))
+
+ ;; COMMAND HANDLER
+ ;;
+ (.catch
+  (.then
+   (atomist.main/handler #js {:command "FindUrlSkill"
+                              :source {:slack {:channel {:id "CTGGW07B6"}
+                                               :user {:id "UDF0NFB5M"}}}
+                              :team {:id "AK748NQC5"}
+                              :raw_message "find-by-regex --url --glob-pattern=**/*"
+                              :secrets [{:uri "atomist://api-key" :value token}]}
+                         fake-handler)
+   (fn [v] (log/info "value " v)))
   (fn [error] (log/error "error " error))))

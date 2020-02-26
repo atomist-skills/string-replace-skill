@@ -139,12 +139,13 @@
                 (:ref request)
                 {:target-branch "master"
                  :branch branch
-                 :title "String Replace Skill running"
-                 :body (gstring/format "Update %s/%s - running %s over %s\n[atomist:edited]"
-                                       (-> request :ref :owner)
-                                       (-> request :ref :repo)
+                 :title (-> request :configuration :name)
+                 :body (gstring/format "Ran string replacement `%s` on %s\n[atomist:edited]"
                                        (:expression request)
-                                       (:glob-pattern request))}))
+                                       (->> (s/split (:glob-pattern request) ",")
+                                            (map #(gstring/format "`%s`" %))
+                                            (interpose ",")
+                                            (apply str)))}))
            (let [pullRequest (<! (github/pr-channel request branch))]
              (handler (merge request
                              (if-let [n (:number pullRequest)]

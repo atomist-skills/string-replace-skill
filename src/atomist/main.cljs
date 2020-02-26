@@ -72,7 +72,7 @@
   (if (re-find #"s/(.*)/(.*)/g?" s)
     (fn [f content]
       (let [path (. ^js f -realPath)]
-        (log/infof "spawn sed on %s for file %s" s path)
+        (log/debugf "spawn sed on %s for file %s" s path)
         (go
          (let [[error stdout stderr] (<! (proc/aexec (gstring/format "sed %s '%s' %s"
                                                                      (if (= type "extended") "-E" "")
@@ -80,7 +80,7 @@
                                                                      path)))]
            (if error
              (do
-               (log/error stderr)
+               (log/errorf "stderr:  %s" stderr)
                {:error stderr})
              {:new-content (if (string? stdout)
                              stdout
@@ -98,7 +98,7 @@
            {:keys [error new-content]} (<! (editor f content))]
        (cond
          (= content new-content)
-         (log/info "content not changed")
+         (log/debug "content not changed")
          (and new-content (not error))
          (<! (sdm/set-content f new-content))
          :else

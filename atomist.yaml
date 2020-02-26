@@ -15,7 +15,7 @@
 #
 
 skill:
-  name: "atomist/string-replace-skill"
+  name: atomist/string-replace-skill
   title: String Replace
   version: 0.2.22
   author: Atomist
@@ -30,11 +30,11 @@ skill:
   homepage: https://github.com/atomist-skills/string-replace-skill
   repository: https://github.com/atomist-skills/string-replace-skill
   icon: https://images.atomist.com/rug/regex.png
-  videoUrl: https://images.atomist.com/skills/string-replace-1440x720.gif
+  video: https://images.atomist.com/skills/string-replace-1440x720.gif
   dispatch: multiple
 
   package:
-    use: 'atomist/package-cljs-skill'
+    use: atomist/package-cljs-skill
 
   runtime:
     name: nodejs10

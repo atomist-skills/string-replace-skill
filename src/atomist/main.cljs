@@ -119,7 +119,6 @@
      - :image selected for replacement - select-recent-image middleware"
   [handler]
   (fn [request]
-    (log/infof "run editor %s over %s on %s" (:expression request) (:glob-pattern request) (-> request :ref))
     (let [branch (-> request :configuration :name (config->branch))]
       (cond
         (and (:expression request) (:glob-pattern request))

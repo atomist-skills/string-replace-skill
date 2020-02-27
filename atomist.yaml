@@ -30,7 +30,7 @@ skill:
   homepage: https://github.com/atomist-skills/string-replace-skill
   repository: https://github.com/atomist-skills/string-replace-skill
   icon: https://images.atomist.com/rug/regex.png
-  video: https://images.atomist.com/skills/string-replace-1440x720.gif
+  video: https://images.atomist.com/skills/string-replace.gif
   dispatch: multiple
 
   package:

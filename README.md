@@ -1,48 +1,66 @@
 # `@atomist/string-replace-skill`
 
-On every Push, run a search and replace regular expression on a select set of files and open a Pull Request with any changes.  This skill
-also supports a Slack integration to request the search and replace operation from Slack.
+<!---atomist-skill-readme:start--->
 
-## Usage
+String Replace can be used to update configuration, code and text across files in all selected repositories. The string replacement will be run the next time there is a push to any of the selected repositories. If there are matches, this skill will create a pull request with the proposed changes.
 
-Each configuration of this skill should define a search replace expression and a glob expression to define which files
-should be included in the search.
+## Configuration
 
-| Name         | Type   | Required | Notes |
-| :---         | :----  | :---  | :------ | 
-| glob-pattern | `Text` | false | By default, if no glob pattern provided, the string replacement will run on all files in the repo |
-| expression   | `Text` | true |  |
-| Scope | `Org & Repo Selection` | true | Choose the scope of the String-Replace Operation |
+---
 
-Each configuration can configure a different set of relevant Repositories.  Scopes can also overlap, but if multiple expressions
-match, separate Pull Requests will be opened (one for each expression).
+### Name
 
-## Example
+Give your configuration of this skill a distinctive name so that you you will recognize it when you have more than one enabled. Something helpful like "Snake case → camel case for YAML" if, for example, your string replacement converts snake case to camel case on all YAML files.
 
-Search all html files in the repository for the regix `search`.  Globally replace occurrences of this pattern with the string `replace`.
+### Replace in files
 
-* `glob-pattern=**/*.html`
-* `expression=s/search/replace/g`
+To restrict this files that String Replace will run on, provide one or more glob patterns. For example, to only run on YAML files with `.yaml` or `.yml` extensions at any depth in the repository, you could provide this glob pattern:
+
+`*.yaml,*.yml`
+
+For more information on glob patterns, see [the wikipedia page](https://en.wikipedia.org/wiki/Glob_(programming)).
+
+### Substitution expression
+
+Enter the expression to match and substitute. This will always start with `s/` and eng with `/g` which tells the skill to do a *global* replacement, replacing all matches found. ( `/g` is the only option supported). 
+
+For example, to perform the snake case to camel case conversion, this substitution expression would accomplish the job:
+
+`s/([a-zA-Z]*?)_([a-zA-Z])/$1\U$2/g`
+
+For help crafting and testing your regular expressions, try [this online tool](https://regex101.com/) or see the `[sed` regular expression manual](https://www.gnu.org/software/sed/manual/html_node/Regular-Expressions.html).
+
+### Which repositories
+
+By default, this skill will be enabled for all repositories in all organizations you have connected.
+To restrict the organizations or specific repositories on which the skill will run, you can explicitly
+choose organization(s) and repositories.
 
 ## Integrations
 
-* `GitHub` - requires the Atomist GitHub application installed in some Orgs
-* `Slack` - if the Atomist slack app is installed, this skill will notify the linked Slack channel 
-            whenever a PR is raised for a search and replace expression.
-            
-## Collaborations
+---
 
-This skill works well with the `GitHub Notifications`, `GitHub Auto-merge pull request`, and `GitHub Auto-rebase pull request` skills.
+**GitHub**
 
-## Slack Commands
+The Atomist GitHub integration must be configured to used this skill. At least one repository must be selected.
 
-This skill also adds a new command to your Slack team:
+**Slack**
 
-`@atomist sed --configuration=example1`
+If the Atomist Slack integration is configured, this skill will send a notification message to the configured Slack channel when a pull request is created. 
 
-If you run this command from a Slack channel, with a linked Repo, it will lookup a regular expression and glob-pattern
-from the `config-name` of this skill.  As long as this configuration exists, the skill will apply the search and replace operation, 
-and then open a PR if there are any changes.
+You can invoke this skill from Slack. Entering this command in a channel with a linked repository will execute the string replacement defined in the skill configuration named "Snake case → camel case for YAML":
+
+`@atomist string-replace --configuration="Snake case → camel case for YAML"`
+
+You do need to run this command from a Slack channel that is linked to a repository. For more information about the Slack integration and channel repository linking, see [the documentation](https://docs.atomist.com/user/slack/).
+
+## Related skills
+
+---
+
+This skill works well with the GitHub Notifications, Auto-merge pull request and Auto-rebase pull request skills.
+
+<!---atomist-skill-readme:end--->
 
 ---
 

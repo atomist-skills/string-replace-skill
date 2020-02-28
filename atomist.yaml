@@ -19,11 +19,12 @@ skill:
   title: String Replace
   version: 0.2.27
   author: Atomist
-  description: Run a Regex String replace editor across a codebase.
+  description: Automatically replace strings in files based on a regular expression
   long_description: |
-    The user specifies a glob file pattern (e.g. *.rb ) to apply a string replacement to,
-    and a string replacement regular expression (e.g. s/<match>/replace/).
-    When a push happens on a repo, the string replacement skill will be triggered.
+    Automatically replace strings in files based on a regular expression.
+    - Update configuration, code, documentation or any file in your codebase
+    - Rename packages across an entire codebase
+    - Update information needing periodic revision like dates, licenses, comment blocks
   category:
   - DEV_EX
   license: Apache-2.0
@@ -44,8 +45,8 @@ skill:
 
 commands:
   - name: StringReplaceSkill
-    description: "Trigger the StringReplaceSkill on a linked Repo"
-    pattern: "^sed .*$"
+    description: "Invoke the StringReplaceSkill on a linked repository"
+    pattern: "^string-replace .*$"
   - name: FindUrlSkill
     description: "Find all urls in the codebase"
     pattern: "^find-by-regex .*$"
@@ -75,7 +76,7 @@ parameters:
           value: "perl"
   - string:
       description: "Enter string replacement expression (supports only the 'g' option)"
-      displayName: "Substitution Expression"
+      displayName: "Substitution expression"
       name: "expression"
       placeHolder: "s/search/replace/g"
       pattern: "s/.*/.*/g?"

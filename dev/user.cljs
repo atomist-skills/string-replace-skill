@@ -9,7 +9,7 @@
 
 (println token)
 (println github-token)
-(println (.. js/process -env -AUTOMATION_ENDPOINT))
+(println (.. js/process -env -GRAPHQL_ENDPOINT))
 
 (defn fake-handler [& args]
   (log/info "args " args))
@@ -26,7 +26,7 @@
                                                                         :credential {:secret github-token}}}}
                                              :after {:message ""}}]}
                               :secrets [{:uri "atomist://api-key" :value token}]
-                              :configuration {:name "default"
+                              :configuration {:name "whales->elephants"
                                               :parameters [{:name "expression" :value "s/whales/elephants/g"}
                                                            {:name "glob-pattern" :value "README.md"}]}
                               :extensions [:team_id "AK748NQC5"]}

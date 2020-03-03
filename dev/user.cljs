@@ -26,8 +26,8 @@
                                                                         :credential {:secret github-token}}}}
                                              :after {:message ""}}]}
                               :secrets [{:uri "atomist://api-key" :value token}]
-                              :configuration {:name "whales->elephants"
-                                              :parameters [{:name "expression" :value "s/whales/elephants/g"}
+                              :configuration {:name "elephants->elephants"
+                                              :parameters [{:name "expression" :value "s/elephants/elephants/g"}
                                                            {:name "glob-pattern" :value "README.md"}]}
                               :extensions [:team_id "AK748NQC5"]}
                          fake-handler)
@@ -47,7 +47,7 @@
                               :configurations [{:name "elephants"
                                                 :enabled true
                                                 :parameters [{:name "glob-pattern" :value "README.md"}
-                                                             {:name "expression" :value "s/whales/elephants/g"}]}]
+                                                             {:name "expression" :value "s/elephants/elephants/g"}]}]
                               :raw_message "sed --configuration=elephants"
                               :secrets [{:uri "atomist://api-key" :value token}]}
                          fake-handler)

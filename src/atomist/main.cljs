@@ -160,6 +160,12 @@
     (log/infof "Push Request %s over %s on %s" (:expression request) (:glob-pattern request) (:ref request))
     (handler request)))
 
+(defn add-default-glob-pattern [handler]
+  (fn [request]
+    (if (not (:glob-pattern request))
+      (handler (assoc request :glob-pattern "**/*"))
+      (handler request))))
+
 (defn pr-link [request]
   (gstring/format "https://github.com/%s/%s/pull/%s" (-> request :ref :owner) (-> request :ref :repo) (or (-> request :pull-request-number) "")))
 
@@ -216,6 +222,7 @@
             (log-attempt)
             (api/extract-github-token)
             (api/create-ref-from-push-event)
+            (add-default-glob-pattern)
             (api/add-skill-config :glob-pattern :expression :schedule :scope :parserType)
             (api/skip-push-if-atomist-edited)) request)
 

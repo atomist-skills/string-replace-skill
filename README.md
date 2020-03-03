@@ -6,8 +6,6 @@ String Replace can be used to update configuration, code and text across files i
 
 ## Configuration
 
----
-
 ### Name
 
 Give your configuration of this skill a distinctive name so that you you will recognize it when you have more than one enabled. Something helpful like "Snake case → camel case for YAML" if, for example, your string replacement converts snake case to camel case on all YAML files.
@@ -38,8 +36,6 @@ choose organization(s) and repositories.
 
 ## Integrations
 
----
-
 **GitHub**
 
 The Atomist GitHub integration must be configured to used this skill. At least one repository must be selected.
@@ -55,8 +51,6 @@ You can invoke this skill from Slack. Entering this command in a channel with a 
 You do need to run this command from a Slack channel that is linked to a repository. For more information about the Slack integration and channel repository linking, see [the documentation](https://docs.atomist.com/user/slack/).
 
 ## Related skills
-
----
 
 This skill works well with the GitHub Notifications, Auto-merge pull request and Auto-rebase pull request skills.
 

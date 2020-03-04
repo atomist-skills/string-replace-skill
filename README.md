@@ -50,10 +50,6 @@ You can invoke this skill from Slack. Entering this command in a channel with a 
 
 You do need to run this command from a Slack channel that is linked to a repository. For more information about the Slack integration and channel repository linking, see [the documentation](https://docs.atomist.com/user/slack/).
 
-## Related skills
-
-This skill works well with the GitHub Notifications, Auto-merge pull request and Auto-rebase pull request skills.
-
 <!---atomist-skill-readme:end--->
 
 ---

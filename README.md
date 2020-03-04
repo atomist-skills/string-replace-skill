@@ -26,7 +26,7 @@ For example, to perform the snake case to camel case conversion, this substituti
 
 `s/([a-zA-Z]*?)_([a-zA-Z])/$1\U$2/g`
 
-For help crafting and testing your regular expressions, try [this online tool](https://regex101.com/) or see the `[sed` regular expression manual](https://www.gnu.org/software/sed/manual/html_node/Regular-Expressions.html).
+For help crafting and testing your regular expressions, try [this online tool](https://regex101.com/) and see [this guide](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions/Cheatsheet).
 
 ### Which repositories
 

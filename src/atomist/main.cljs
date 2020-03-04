@@ -129,7 +129,9 @@
                           (let [[_ search replace opts] (re-find #"s/(.*)/(.*)/(g?)" (:expression request))]
                             (content-editor search replace opts))
                           :else
-                          (file-stream-editor (:expression request)))]
+                          (let [[_ search replace opts] (re-find #"s/(.*)/(.*)/(g?)" (:expression request))]
+                            (content-editor search replace opts))
+                          #_(file-stream-editor (:expression request)))]
           (go
            (<! (editors/perform-edits-in-PR-with-multiple-glob-patterns
                 (compile-simple-content-editor request editor)

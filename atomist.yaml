@@ -58,22 +58,22 @@ parameters:
       name: "glob-pattern"
       placeHolder: "README.md,**/*.html"
       required: false
-  - singleChoice:
-      description: "Choose a regex parser"
-      displayName: "Regex Parser Type"
-      name: "parserType"
-      required: true
-      defaultValue: "basic"
-      options:
-        - description: "basic regular expression syntax used by sed"
-          text: "basic (BRE)"
-          value: "basic"
-        - description: "extended regular expression syntax"
-          text: "extended (modern)"
-          value: "extended"
-        - description: "Syntax with extensions derived originally from Perl (as implemented in Node.js)"
-          text: "Perl-derivative"
-          value: "perl"
+#  - singleChoice:
+#      description: "Choose a regex parser"
+#      displayName: "Regex Parser Type"
+#      name: "parserType"
+#      required: true
+#      defaultValue: "basic"
+#      options:
+#        - description: "basic regular expression syntax used by sed"
+#          text: "basic (BRE)"
+#          value: "basic"
+#        - description: "extended regular expression syntax"
+#          text: "extended (modern)"
+#          value: "extended"
+#        - description: "Syntax with extensions derived originally from Perl (as implemented in Node.js)"
+#          text: "Perl-derivative"
+#          value: "perl"
   - string:
       description: "Enter string replacement expression (supports only the 'g' option)"
       displayName: "Substitution expression"

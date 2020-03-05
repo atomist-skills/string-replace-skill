@@ -53,10 +53,11 @@
      content editor is (File String) => String"
   [search-regex replace opts]
   (fn [f content]
-    (let [p (re-pattern search-regex)]
-      (if (s/starts-with? opts "g")
-        (s/replace-all content p replace)
-        (s/replace content p replace)))))
+    (go
+     (let [p (re-pattern search-regex)]
+       (if (s/starts-with? opts "g")
+         {:new-content (s/replace-all content p replace)}
+         {:new-content (s/replace content p replace)})))))
 
 (defn file-stream-editor
   "compile an editor

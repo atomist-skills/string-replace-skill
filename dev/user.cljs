@@ -7,10 +7,6 @@
 (def token (.. js/process -env -API_KEY_SLIMSLENDERSLACKS_STAGING))
 (def github-token (.. js/process -env -GITHUB_TOKEN))
 
-(println token)
-(println github-token)
-(println (.. js/process -env -GRAPHQL_ENDPOINT))
-
 (defn fake-handler [& args]
   (log/info "args " args))
 
@@ -46,7 +42,7 @@
                               :team {:id "AK748NQC5"}
                               :configurations [{:name "elephants"
                                                 :enabled true
-                                                :parameters [{:name "glob-pattern" :value "README.md"}
+                                                :parameters [{:name "glob-pattern" :value "README.md,**/*.html"}
                                                              {:name "expression" :value "s/whales/elephants/g"}]}]
                               :raw_message "sed --configuration=elephants"
                               :secrets [{:uri "atomist://api-key" :value token}]}

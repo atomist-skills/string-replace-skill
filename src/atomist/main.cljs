@@ -134,22 +134,23 @@
                             (content-editor search replace opts))
                           #_(file-stream-editor (:expression request)))]
           (go
-           (<! (editors/perform-edits-in-PR-with-multiple-glob-patterns
-                (compile-simple-content-editor request editor)
-                (s/split (:glob-pattern request) #",")
-                (:token request)
-                (:ref request)
-                {:target-branch "master"
-                 :branch branch
-                 :title (-> request :configuration :name)
-                 :body (gstring/format "Ran string replacement `%s` on %s\n[atomist:edited]"
-                                       (:expression request)
-                                       (->> (s/split (:glob-pattern request) ",")
-                                            (map #(gstring/format "`%s`" %))
-                                            (interpose ",")
-                                            (apply str)))}))
-           (let [pullRequest (<! (github/pr-channel request branch))]
+           (let [edit-result (<! (editors/perform-edits-in-PR-with-multiple-glob-patterns
+                                  (compile-simple-content-editor request editor)
+                                  (s/split (:glob-pattern request) #",")
+                                  (:token request)
+                                  (:ref request)
+                                  {:target-branch "master"
+                                   :branch branch
+                                   :title (-> request :configuration :name)
+                                   :body (gstring/format "Ran string replacement `%s` on %s\n[atomist:edited]"
+                                                         (:expression request)
+                                                         (->> (s/split (:glob-pattern request) ",")
+                                                              (map #(gstring/format "`%s`" %))
+                                                              (interpose ",")
+                                                              (apply str)))}))
+                 pullRequest (<! (github/pr-channel request branch))]
              (handler (merge request
+                             {:edit-result edit-result}
                              (if-let [n (:number pullRequest)]
                                {:pull-request-number n})))))
           (api/finish request :failure (gstring/format "this skill will only run expressions of the kind s/.*/.*/g?" (:expression request))))
@@ -171,6 +172,11 @@
 
 (defn pr-link [request]
   (gstring/format "https://github.com/%s/%s/pull/%s" (-> request :ref :owner) (-> request :ref :repo) (or (-> request :pull-request-number) "")))
+
+(defn send-status [request]
+  (if (and (:pull-request-number request) (= :raised (:edit-result request)))
+    (gstring/format "**StringReplaceSkill** completed successfully:  [PR raised](%s)" (pr-link request))
+    "completed without raising PullRequest"))
 
 (defn ^:export handler
   "handler
@@ -198,10 +204,7 @@
        ;; Invoked by Command Handler (test out the regex from slack)
        (= "StringReplaceSkill" (:command request))
        ((-> (api/finished :message "CommandHandler"
-                          :send-status (fn [request]
-                                         (if (:pull-request-number request)
-                                           (gstring/format "**StringReplaceSkill** CommandHandler completed successfully:  [PR raised](%s)" (pr-link request))
-                                           "CommandHandler completed without raising PullRequest")))
+                          :send-status send-status)
             (run-editors)
             (api/add-skill-config-by-configuration-parameter :configuration :glob-pattern :expression :scope)
             (api/create-ref-from-first-linked-repo)
@@ -217,10 +220,7 @@
        ;; Push Event (try out config parameters)
        (contains? (:data request) :Push)
        ((-> (api/finished :message "Push event"
-                          :send-status (fn [request]
-                                         (if (:pull-request-number request)
-                                           (gstring/format "**StringReplaceSkill** handled Push Event:  [PR raised](%s)" (pr-link request))
-                                           "Push event handler completed without raising PullRequest")))
+                          :send-status send-status)
             (run-editors)
             (log-attempt)
             (api/extract-github-token)

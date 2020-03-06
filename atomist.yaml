@@ -17,7 +17,7 @@
 skill:
   name: atomist/string-replace-skill
   title: String Replace
-  version: 0.2.36
+  version: 0.2.37
   author: Atomist
   description: Automatically replace strings in files based on a regular expression
   long_description: |

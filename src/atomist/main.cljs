@@ -106,8 +106,10 @@
          (log/errorf "error running stream editor: %s" error)))
      true)))
 
-(defn config->branch [s]
-  (-> s (s/replace-all #"\s" "")))
+(defn config->branch-name [config-name branch-name]
+  (gstring/format "%s-on-%s"
+                  (-> config-name (s/replace-all #"\s" ""))
+                  branch-name))
 
 (defn run-editors
   "middleware
@@ -117,10 +119,12 @@
      - :token for Github - api/extract-github-user-token middleware
      - :glob-pattern
      - :path-to-spec
-     - :image selected for replacement - select-recent-image middleware"
+     - :image selected for replacement - select-recent-image middleware
+
+     TODO - branch naming guidelines should be target branch specific"
   [handler]
   (fn [request]
-    (let [branch (-> request :configuration :name (config->branch))]
+    (let [branch (config->branch-name (-> request :configuration :name) (-> request :ref :branch))]
       (cond
         (and (:expression request) (:glob-pattern request))
         (if-let [editor (cond

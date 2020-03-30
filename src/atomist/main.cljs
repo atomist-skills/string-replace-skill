@@ -107,8 +107,10 @@
          (log/error ex "failed to run editor")))
      true)))
 
-(defn config->branch [s]
-  (-> s (s/replace-all #"\s" "")))
+(defn config->branch-name [config-name branch-name]
+  (gstring/format "%s-on-%s"
+                  (-> config-name (s/replace-all #"\s" ""))
+                  branch-name))
 
 (defn check-config [handler]
   (fn [request]
@@ -156,7 +158,9 @@
      - :token for Github - api/extract-github-user-token middleware
      - :glob-pattern
      - :path-to-spec
-     - :image selected for replacement - select-recent-image middleware"
+     - :image selected for replacement - select-recent-image middleware
+
+     TODO - branch naming guidelines should be target branch specific"
   [handler]
   (fn [request]
     (go
@@ -180,6 +184,11 @@
 
 (defn pr-link [request]
   (gstring/format "https://github.com/%s/%s/pull/%s" (-> request :ref :owner) (-> request :ref :repo) (or (-> request :pull-request-number) "")))
+
+(defn send-status [request]
+  (if (and (:pull-request-number request) (= :raised (:edit-result request)))
+    (gstring/format "**StringReplaceSkill** completed successfully:  [PR raised](%s)" (pr-link request))
+    "completed without raising PullRequest"))
 
 (defn ^:export handler
   "handler
@@ -208,7 +217,8 @@
 
        ;; Invoked by Command Handler (test out the regex from slack)
        (= "StringReplaceSkill" (:command request))
-       ((-> (api/finished :message "CommandHandler")
+       ((-> (api/finished :message "CommandHandler"
+                          :send-status send-status)
             (run-editors)
             (api/edit-inside-PR :pr-config)
             (api/clone-ref)
@@ -231,7 +241,8 @@
 
        ;; Push Event (try out config parameters)
        (contains? (:data request) :Push)
-       ((-> (api/finished :message "Push event")
+       ((-> (api/finished :message "Push event"
+                          :send-status send-status)
             (run-editors)
             (api/edit-inside-PR :pr-config)
             (api/clone-ref)

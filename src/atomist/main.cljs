@@ -30,21 +30,17 @@
   [handler]
   (fn [request]
     (go
-     (let [data
-           (<! (sdm/do-with-shallow-cloned-project
-                (sdm/do-with-files
-                 (fn [f]
-                   (go
-                    {(. ^js f -realPath) (into [] (re-seq url-regex (<! (sdm/get-content f))))}))
-                 (:glob-pattern request))
-                (:token request)
-                (:ref request)))
+     (let [data (<! ((sdm/do-with-files
+                      (fn [f]
+                        (go
+                         {(. ^js f -realPath) (into [] (re-seq url-regex (<! (sdm/get-content f))))}))
+                      (:glob-pattern request)) (:project request)))
            file-matches (apply merge data)]
        (<! (api/simple-message request (gstring/format "found %s urls over %s files"
                                                        (reduce #(+ %1 (-> %2 vals first count)) 0 data)
                                                        (count data))))
        (<! (api/snippet-message request (json/->str file-matches) "application/json" "title"))
-       (handler request)))))
+       (<! (handler request))))))
 
 (defn content-editor
   "compile an editor
@@ -53,10 +49,11 @@
      content editor is (File String) => String"
   [search-regex replace opts]
   (fn [f content]
-    (let [p (re-pattern search-regex)]
-      (if (s/starts-with? opts "g")
-        (s/replace-all content p replace)
-        (s/replace content p replace)))))
+    (go
+     (let [p (re-pattern search-regex)]
+       (if (s/starts-with? opts "g")
+         {:new-content (s/replace-all content p replace)}
+         {:new-content (s/replace content p replace)})))))
 
 (defn file-stream-editor
   "compile an editor
@@ -94,19 +91,62 @@
   [request editor]
   (fn [f]
     (go
-     (let [content (<! (sdm/get-content f))
-           {:keys [error new-content]} (<! (editor f content))]
-       (cond
-         (= content new-content)
-         (log/debug "content not changed")
-         (and new-content (not error))
-         (<! (sdm/set-content f new-content))
-         :else
-         (log/errorf "error running stream editor: %s" error)))
+     (try
+       (let [content (<! (sdm/get-content f))
+             {:keys [error new-content]} (<! (editor f content))]
+         (cond
+           (= content new-content)
+           (log/debug "content not changed")
+
+           (and new-content (not error))
+           (<! (sdm/set-content f new-content))
+
+           :else
+           (log/errorf "error running stream editor: %s" error)))
+       (catch :default ex
+         (log/error ex "failed to run editor")))
      true)))
 
 (defn config->branch [s]
   (-> s (s/replace-all #"\s" "")))
+
+(defn check-config [handler]
+  (fn [request]
+    (go
+     (if (and (:expression request) (:glob-pattern request))
+       (if-let [editor (cond
+                         (#{"basic" "extended"} (:parserType request))
+                         (file-stream-editor (:expression request) :type (:parserType request))
+                         (= "perl" (:parserType request))
+                         (let [[_ search replace opts] (re-find #"s/(.*)/(.*)/(g?)" (:expression request))]
+                           (content-editor search replace opts))
+                         :else
+                         (let [[_ search replace opts] (re-find #"s/(.*)/(.*)/(g?)" (:expression request))]
+                           (content-editor search replace opts))
+                         #_(file-stream-editor (:expression request)))]
+         (<! (handler (assoc request
+                        :editor editor
+                        :pr-config {:target-branch "master"
+                                    :branch (:branch request)
+                                    :title (-> request :configuration :name)
+                                    :body (gstring/format "Ran string replacement `%s` on %s\n[atomist:edited]"
+                                                          (:expression request)
+                                                          (->> (s/split (:glob-pattern request) ",")
+                                                               (map #(gstring/format "`%s`" %))
+                                                               (interpose ",")
+                                                               (apply str)))})))
+         (<! (api/finish request :failure (gstring/format "this skill will only run expressions of the kind s/.*/.*/g?" (:expression request)))))
+       (do
+         (log/warn "run-editors requires both a glob-pattern and an expression")
+         (<! (api/finish request :failure "configuration did not contain `expression` and `glob-pattern`")))))))
+
+(defn check-for-new-pull-request [handler]
+  (fn [request]
+    (go
+     (let [branch (-> request :configuration :name (config->branch))]
+       (let [response (<! (handler (assoc request :branch branch)))]
+         (let [pullRequest (<! (github/pr-channel request branch))]
+           (assoc response :pull-request-number (:number pullRequest))))))))
 
 (defn run-editors
   "middleware
@@ -119,54 +159,24 @@
      - :image selected for replacement - select-recent-image middleware"
   [handler]
   (fn [request]
-    (let [branch (-> request :configuration :name (config->branch))]
-      (cond
-        (and (:expression request) (:glob-pattern request))
-        (if-let [editor (cond
-                          (#{"basic" "extended"} (:parserType request))
-                          (file-stream-editor (:expression request) :type (:parserType request))
-                          (= "perl" (:parserType request))
-                          (let [[_ search replace opts] (re-find #"s/(.*)/(.*)/(g?)" (:expression request))]
-                            (content-editor search replace opts))
-                          :else
-                          (let [[_ search replace opts] (re-find #"s/(.*)/(.*)/(g?)" (:expression request))]
-                            (content-editor search replace opts))
-                          #_(file-stream-editor (:expression request)))]
-          (go
-           (<! (editors/perform-edits-in-PR-with-multiple-glob-patterns
-                (compile-simple-content-editor request editor)
-                (s/split (:glob-pattern request) #",")
-                (:token request)
-                (:ref request)
-                {:target-branch "master"
-                 :branch branch
-                 :title (-> request :configuration :name)
-                 :body (gstring/format "Ran string replacement `%s` on %s\n[atomist:edited]"
-                                       (:expression request)
-                                       (->> (s/split (:glob-pattern request) ",")
-                                            (map #(gstring/format "`%s`" %))
-                                            (interpose ",")
-                                            (apply str)))}))
-           (let [pullRequest (<! (github/pr-channel request branch))]
-             (handler (merge request
-                             (if-let [n (:number pullRequest)]
-                               {:pull-request-number n})))))
-          (api/finish request :failure (gstring/format "this skill will only run expressions of the kind s/.*/.*/g?" (:expression request))))
-        :else
-        (do
-          (log/warn "run-editors requires both a glob-pattern and an expression")
-          (api/finish request :failure "configuration did not contain `expression` and `glob-pattern`"))))))
+    (go
+     (<! ((-> (compile-simple-content-editor request (:editor request))
+              (editors/do-with-glob-patterns (s/split (:glob-pattern request) #","))
+              (editors/check-do-with-glob-patterns-errors)) (:project request)))
+     (<! (handler request)))))
 
 (defn log-attempt [handler]
   (fn [request]
-    (log/infof "Push Request %s over %s on %s" (:expression request) (:glob-pattern request) (:ref request))
-    (handler request)))
+    (go
+     (log/infof "Push Request %s over %s on %s" (:expression request) (:glob-pattern request) (:ref request))
+     (<! (handler request)))))
 
 (defn add-default-glob-pattern [handler]
   (fn [request]
-    (if (not (:glob-pattern request))
-      (handler (assoc request :glob-pattern "**/*"))
-      (handler request))))
+    (go
+     (if (not (:glob-pattern request))
+       (<! (handler (assoc request :glob-pattern "**/*")))
+       (<! (handler request))))))
 
 (defn pr-link [request]
   (gstring/format "https://github.com/%s/%s/pull/%s" (-> request :ref :owner) (-> request :ref :repo) (or (-> request :pull-request-number) "")))
@@ -188,20 +198,22 @@
        (= "FindUrlSkill" (:command request))
        ((-> (api/finished :message "successfully ran FindUrlSkill")
             (run-regular-expressions)
+            (api/clone-ref)
             (api/create-ref-from-first-linked-repo)
             (api/extract-linked-repos)
             (api/extract-github-user-token)
             (api/extract-cli-parameters [[nil "--url" nil]])
-            (api/set-message-id)) request)
+            (api/set-message-id)
+            (api/status)) request)
 
        ;; Invoked by Command Handler (test out the regex from slack)
        (= "StringReplaceSkill" (:command request))
-       ((-> (api/finished :message "CommandHandler"
-                          :send-status (fn [request]
-                                         (if (:pull-request-number request)
-                                           (gstring/format "**StringReplaceSkill** CommandHandler completed successfully:  [PR raised](%s)" (pr-link request))
-                                           "CommandHandler completed without raising PullRequest")))
+       ((-> (api/finished :message "CommandHandler")
             (run-editors)
+            (api/edit-inside-PR :pr-config)
+            (api/clone-ref)
+            (check-config)
+            (check-for-new-pull-request)
             (api/add-skill-config-by-configuration-parameter :configuration :glob-pattern :expression :scope)
             (api/create-ref-from-first-linked-repo)
             (api/extract-linked-repos)
@@ -211,22 +223,30 @@
                                             :pattern ".*"
                                             :validInput "must be a valid configuration name"})
             (api/extract-cli-parameters [[nil "--configuration PATTERN" "existing configuration"]])
-            (api/set-message-id)) (assoc request :branch "master"))
+            (api/set-message-id)
+            (api/status :send-status (fn [request]
+                                            (if (:pull-request-number request)
+                                              (gstring/format "**StringReplaceSkill** CommandHandler completed successfully:  [PR raised](%s)" (pr-link request))
+                                              "CommandHandler completed without raising PullRequest")))) (assoc request :branch "master"))
 
        ;; Push Event (try out config parameters)
        (contains? (:data request) :Push)
-       ((-> (api/finished :message "Push event"
-                          :send-status (fn [request]
-                                         (if (:pull-request-number request)
-                                           (gstring/format "**StringReplaceSkill** handled Push Event:  [PR raised](%s)" (pr-link request))
-                                           "Push event handler completed without raising PullRequest")))
+       ((-> (api/finished :message "Push event")
             (run-editors)
+            (api/edit-inside-PR :pr-config)
+            (api/clone-ref)
+            (check-config)
+            (check-for-new-pull-request)
             (log-attempt)
             (api/extract-github-token)
             (api/create-ref-from-push-event)
             (add-default-glob-pattern)
             (api/add-skill-config :glob-pattern :expression :schedule :scope :parserType)
-            (api/skip-push-if-atomist-edited)) request)
+            (api/skip-push-if-atomist-edited)
+            (api/status :send-status (fn [request]
+                                            (if (:pull-request-number request)
+                                              (gstring/format "**StringReplaceSkill** handled Push Event:  [PR raised](%s)" (pr-link request))
+                                              "Push event handler completed without raising PullRequest")))) request)
 
        :else
        (go

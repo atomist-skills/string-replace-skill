@@ -129,7 +129,7 @@
          (<! (handler (assoc request
                         :editor editor
                         :pr-config {:target-branch "master"
-                                    :branch (:branch request)
+                                    :branch (:branch-name request)
                                     :title (-> request :configuration :name)
                                     :body (gstring/format "Ran string replacement `%s` on %s\n[atomist:edited]"
                                                           (:expression request)
@@ -145,8 +145,8 @@
 (defn check-for-new-pull-request [handler]
   (fn [request]
     (go
-     (let [branch (-> request :configuration :name (config->branch))]
-       (let [response (<! (handler (assoc request :branch branch)))]
+     (let [branch (-> request :configuration :name (config->branch-name (or (:branch request) (-> request :ref :branch))))]
+       (let [response (<! (handler (assoc request :branch-name branch)))]
          (let [pullRequest (<! (github/pr-channel request branch))]
            (assoc response :pull-request-number (:number pullRequest))))))))
 
@@ -190,6 +190,15 @@
     (gstring/format "**StringReplaceSkill** completed successfully:  [PR raised](%s)" (pr-link request))
     "completed without raising PullRequest"))
 
+(defn skip-if-not-master [handler]
+  (fn [request]
+    (go
+     (if (or (true? (:all-branches request))
+             (= "master" (or (:branch request)
+                             (-> request :ref :branch))))
+       (<! (handler request))
+       (<! (api/finish :success "skipping" :visibility :hidden))))))
+
 (defn ^:export handler
   "handler
     must return a Promise - we don't do anything with the value
@@ -213,7 +222,7 @@
             (api/extract-github-user-token)
             (api/extract-cli-parameters [[nil "--url" nil]])
             (api/set-message-id)
-            (api/status)) request)
+            (api/status)) (assoc request :branch "master"))
 
        ;; Invoked by Command Handler (test out the regex from slack)
        (= "StringReplaceSkill" (:command request))
@@ -235,9 +244,9 @@
             (api/extract-cli-parameters [[nil "--configuration PATTERN" "existing configuration"]])
             (api/set-message-id)
             (api/status :send-status (fn [request]
-                                            (if (:pull-request-number request)
-                                              (gstring/format "**StringReplaceSkill** CommandHandler completed successfully:  [PR raised](%s)" (pr-link request))
-                                              "CommandHandler completed without raising PullRequest")))) (assoc request :branch "master"))
+                                       (if (:pull-request-number request)
+                                         (gstring/format "**StringReplaceSkill** CommandHandler completed successfully:  [PR raised](%s)" (pr-link request))
+                                         "CommandHandler completed without raising PullRequest")))) (assoc request :branch "master"))
 
        ;; Push Event (try out config parameters)
        (contains? (:data request) :Push)
@@ -250,14 +259,15 @@
             (check-for-new-pull-request)
             (log-attempt)
             (api/extract-github-token)
+            (skip-if-not-master)
             (api/create-ref-from-push-event)
             (add-default-glob-pattern)
-            (api/add-skill-config :glob-pattern :expression :schedule :scope :parserType)
+            (api/add-skill-config :glob-pattern :expression :schedule :scope :parserType :all-branches)
             (api/skip-push-if-atomist-edited)
             (api/status :send-status (fn [request]
-                                            (if (:pull-request-number request)
-                                              (gstring/format "**StringReplaceSkill** handled Push Event:  [PR raised](%s)" (pr-link request))
-                                              "Push event handler completed without raising PullRequest")))) request)
+                                       (if (:pull-request-number request)
+                                         (gstring/format "**StringReplaceSkill** handled Push Event:  [PR raised](%s)" (pr-link request))
+                                         "Push event handler completed without raising PullRequest")))) request)
 
        :else
        (go

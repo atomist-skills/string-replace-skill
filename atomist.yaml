@@ -91,3 +91,8 @@ parameters:
       displayName: "Which repositories"
       name: "scope"
       required: false
+  - boolean:
+      description: "Apply search replace to all branches (instead of just to default/master)"
+      displayName: "All Branches"
+      name: all-branches
+      required: false

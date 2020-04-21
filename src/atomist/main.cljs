@@ -30,17 +30,17 @@
   [handler]
   (fn [request]
     (go
-     (let [data (<! ((sdm/do-with-files
-                      (fn [f]
-                        (go
-                         {(. ^js f -realPath) (into [] (re-seq url-regex (<! (sdm/get-content f))))}))
-                      (:glob-pattern request)) (:project request)))
-           file-matches (apply merge data)]
-       (<! (api/simple-message request (gstring/format "found %s urls over %s files"
-                                                       (reduce #(+ %1 (-> %2 vals first count)) 0 data)
-                                                       (count data))))
-       (<! (api/snippet-message request (json/->str file-matches) "application/json" "title"))
-       (<! (handler request))))))
+      (let [data (<! ((sdm/do-with-files
+                       (fn [f]
+                         (go
+                           {(. ^js f -realPath) (into [] (re-seq url-regex (<! (sdm/get-content f))))}))
+                       (:glob-pattern request)) (:project request)))
+            file-matches (apply merge data)]
+        (<! (api/simple-message request (gstring/format "found %s urls over %s files"
+                                                        (reduce #(+ %1 (-> %2 vals first count)) 0 data)
+                                                        (count data))))
+        (<! (api/snippet-message request (json/->str file-matches) "application/json" "title"))
+        (<! (handler request))))))
 
 (defn content-editor
   "compile an editor
@@ -50,10 +50,10 @@
   [search-regex replace opts]
   (fn [f content]
     (go
-     (let [p (re-pattern search-regex)]
-       (if (s/starts-with? opts "g")
-         {:new-content (s/replace-all content p replace)}
-         {:new-content (s/replace content p replace)})))))
+      (let [p (re-pattern search-regex)]
+        (if (s/starts-with? opts "g")
+          {:new-content (s/replace-all content p replace)}
+          {:new-content (s/replace content p replace)})))))
 
 (defn file-stream-editor
   "compile an editor
@@ -71,17 +71,17 @@
       (let [path (. ^js f -realPath)]
         (log/debugf "spawn sed on %s for file %s" s path)
         (go
-         (let [[error stdout stderr] (<! (proc/aexec (gstring/format "sed %s '%s' %s"
-                                                                     (if (= type "extended") "-E" "")
-                                                                     s
-                                                                     path)))]
-           (if error
-             (do
-               (log/errorf "stderr:  %s" stderr)
-               {:error stderr})
-             {:new-content (if (string? stdout)
-                             stdout
-                             (io/slurp stdout))})))))))
+          (let [[error stdout stderr] (<! (proc/aexec (gstring/format "sed %s '%s' %s"
+                                                                      (if (= type "extended") "-E" "")
+                                                                      s
+                                                                      path)))]
+            (if error
+              (do
+                (log/errorf "stderr:  %s" stderr)
+                {:error stderr})
+              {:new-content (if (string? stdout)
+                              stdout
+                              (io/slurp stdout))})))))))
 
 (defn compile-simple-content-editor
   "compile a file editor
@@ -91,21 +91,21 @@
   [request editor]
   (fn [f]
     (go
-     (try
-       (let [content (<! (sdm/get-content f))
-             {:keys [error new-content]} (<! (editor f content))]
-         (cond
-           (= content new-content)
-           (log/debug "content not changed")
+      (try
+        (let [content (<! (sdm/get-content f))
+              {:keys [error new-content]} (<! (editor f content))]
+          (cond
+            (= content new-content)
+            (log/debug "content not changed")
 
-           (and new-content (not error))
-           (<! (sdm/set-content f new-content))
+            (and new-content (not error))
+            (<! (sdm/set-content f new-content))
 
-           :else
-           (log/errorf "error running stream editor: %s" error)))
-       (catch :default ex
-         (log/error ex "failed to run editor")))
-     true)))
+            :else
+            (log/errorf "error running stream editor: %s" error)))
+        (catch :default ex
+          (log/error ex "failed to run editor")))
+      true)))
 
 (defn config->branch-name [config-name branch-name]
   (gstring/format "%s-on-%s"
@@ -115,40 +115,40 @@
 (defn check-config [handler]
   (fn [request]
     (go
-     (if (and (:expression request) (:glob-pattern request))
-       (if-let [editor (cond
-                         (#{"basic" "extended"} (:parserType request))
-                         (file-stream-editor (:expression request) :type (:parserType request))
-                         (= "perl" (:parserType request))
-                         (let [[_ search replace opts] (re-find #"s/(.*)/(.*)/(g?)" (:expression request))]
-                           (content-editor search replace opts))
-                         :else
-                         (let [[_ search replace opts] (re-find #"s/(.*)/(.*)/(g?)" (:expression request))]
-                           (content-editor search replace opts))
-                         #_(file-stream-editor (:expression request)))]
-         (<! (handler (assoc request
-                        :editor editor
-                        :pr-config {:target-branch "master"
-                                    :branch (:branch-name request)
-                                    :title (-> request :configuration :name)
-                                    :body (gstring/format "Ran string replacement `%s` on %s\n[atomist:edited]"
-                                                          (:expression request)
-                                                          (->> (s/split (:glob-pattern request) ",")
-                                                               (map #(gstring/format "`%s`" %))
-                                                               (interpose ",")
-                                                               (apply str)))})))
-         (<! (api/finish request :failure (gstring/format "this skill will only run expressions of the kind s/.*/.*/g?" (:expression request)))))
-       (do
-         (log/warn "run-editors requires both a glob-pattern and an expression")
-         (<! (api/finish request :failure "configuration did not contain `expression` and `glob-pattern`")))))))
+      (if (and (:expression request) (:glob-pattern request))
+        (if-let [editor (cond
+                          (#{"basic" "extended"} (:parserType request))
+                          (file-stream-editor (:expression request) :type (:parserType request))
+                          (= "perl" (:parserType request))
+                          (let [[_ search replace opts] (re-find #"s/(.*)/(.*)/(g?)" (:expression request))]
+                            (content-editor search replace opts))
+                          :else
+                          (let [[_ search replace opts] (re-find #"s/(.*)/(.*)/(g?)" (:expression request))]
+                            (content-editor search replace opts))
+                          #_(file-stream-editor (:expression request)))]
+          (<! (handler (assoc request
+                              :editor editor
+                              :pr-config {:target-branch "master"
+                                          :branch (:branch-name request)
+                                          :title (-> request :configuration :name)
+                                          :body (gstring/format "Ran string replacement `%s` on %s\n[atomist:edited]"
+                                                                (:expression request)
+                                                                (->> (s/split (:glob-pattern request) ",")
+                                                                     (map #(gstring/format "`%s`" %))
+                                                                     (interpose ",")
+                                                                     (apply str)))})))
+          (<! (api/finish request :failure (gstring/format "this skill will only run expressions of the kind s/.*/.*/g?" (:expression request)))))
+        (do
+          (log/warn "run-editors requires both a glob-pattern and an expression")
+          (<! (api/finish request :failure "configuration did not contain `expression` and `glob-pattern`")))))))
 
 (defn check-for-new-pull-request [handler]
   (fn [request]
     (go
-     (let [branch (-> request :configuration :name (config->branch-name (or (:branch request) (-> request :ref :branch))))]
-       (let [response (<! (handler (assoc request :branch-name branch)))]
-         (let [pullRequest (<! (github/pr-channel request branch))]
-           (assoc response :pull-request-number (:number pullRequest))))))))
+      (let [branch (-> request :configuration :name (config->branch-name (or (:branch request) (-> request :ref :branch))))]
+        (let [response (<! (handler (assoc request :branch-name branch)))]
+          (let [pullRequest (<! (github/pr-channel request branch))]
+            (assoc response :pull-request-number (:number pullRequest))))))))
 
 (defn run-editors
   "middleware
@@ -164,23 +164,23 @@
   [handler]
   (fn [request]
     (go
-     (<! ((-> (compile-simple-content-editor request (:editor request))
-              (editors/do-with-glob-patterns (s/split (:glob-pattern request) #","))
-              (editors/check-do-with-glob-patterns-errors)) (:project request)))
-     (<! (handler request)))))
+      (<! ((-> (compile-simple-content-editor request (:editor request))
+               (editors/do-with-glob-patterns (s/split (:glob-pattern request) #","))
+               (editors/check-do-with-glob-patterns-errors)) (:project request)))
+      (<! (handler request)))))
 
 (defn log-attempt [handler]
   (fn [request]
     (go
-     (log/infof "Push Request %s over %s on %s" (:expression request) (:glob-pattern request) (:ref request))
-     (<! (handler request)))))
+      (log/infof "Push Request %s over %s on %s" (:expression request) (:glob-pattern request) (:ref request))
+      (<! (handler request)))))
 
 (defn add-default-glob-pattern [handler]
   (fn [request]
     (go
-     (if (not (:glob-pattern request))
-       (<! (handler (assoc request :glob-pattern "**/*")))
-       (<! (handler request))))))
+      (if (not (:glob-pattern request))
+        (<! (handler (assoc request :glob-pattern "**/*")))
+        (<! (handler request))))))
 
 (defn pr-link [request]
   (gstring/format "https://github.com/%s/%s/pull/%s" (-> request :ref :owner) (-> request :ref :repo) (or (-> request :pull-request-number) "")))
@@ -193,11 +193,11 @@
 (defn skip-if-not-master [handler]
   (fn [request]
     (go
-     (if (or (true? (:all-branches request))
-             (= "master" (or (:branch request)
-                             (-> request :ref :branch))))
-       (<! (handler request))
-       (<! (api/finish :success "skipping" :visibility :hidden))))))
+      (if (or (= "master" (or (:branch request)
+                              (-> request :ref :branch)))
+              (= "pr" (:update request)))
+        (<! (handler request))
+        (<! (api/finish :success "skipping" :visibility :hidden))))))
 
 (defn ^:export handler
   "handler
@@ -233,7 +233,7 @@
             (api/clone-ref)
             (check-config)
             (check-for-new-pull-request)
-            (api/add-skill-config-by-configuration-parameter :configuration :glob-pattern :expression :scope)
+            (api/add-skill-config-by-configuration-parameter :configuration :glob-pattern :expression :scope :update)
             (api/create-ref-from-first-linked-repo)
             (api/extract-linked-repos)
             (api/extract-github-user-token)
@@ -260,10 +260,10 @@
             (log-attempt)
             (api/extract-github-token)
             (skip-if-not-master)
-            (api/apply-repo-filter :scope)
+            #_(api/apply-repo-filter :scope)
             (api/create-ref-from-push-event)
             (add-default-glob-pattern)
-            (api/add-skill-config :glob-pattern :expression :schedule :scope :parserType :all-branches)
+            (api/add-skill-config :glob-pattern :expression :schedule :scope :parserType :update)
             (api/skip-push-if-atomist-edited)
             (api/status :send-status (fn [request]
                                        (if (:pull-request-number request)
@@ -272,5 +272,5 @@
 
        :else
        (go
-        (log/errorf "Unrecognized event %s" request)
-        (api/finish request))))))
+         (log/errorf "Unrecognized event %s" request)
+         (api/finish request))))))

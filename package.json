@@ -4,7 +4,7 @@
   "author": "jim@atomist.com",
   "description": "use this to pull in a skill's npm dependencies",
   "scripts": {
-    "build:watch": "shadow-cljs watch script",
+    "build:watch": "shadow-cljs watch dev",
     "build": "shadow-cljs release release"
   },
   "dependencies": {

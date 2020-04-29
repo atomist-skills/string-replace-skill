@@ -64,7 +64,7 @@ parameters:
       placeHolder: "s/search/replace/g"
       pattern: "s/.*/.*/g?"
       required: true
-  - single_choice:
+  - singleChoice:
       name: update
       displayName: Update Strategy
       description: Select how updates should be applied

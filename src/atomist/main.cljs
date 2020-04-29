@@ -14,6 +14,7 @@
             [atomist.github :as github]
             [cljs-node-io.proc :as proc]
             [cljs-node-io.core :as io]
+            [atomist.repo-filter :as repo-filter]
             ["url-regex" :as regex])
   (:require-macros [cljs.core.async.macros :refer [go]]))
 
@@ -263,12 +264,29 @@
             #_(api/apply-repo-filter :scope)
             (api/create-ref-from-push-event)
             (add-default-glob-pattern)
-            (api/add-skill-config :glob-pattern :expression :schedule :scope :parserType :update)
+            (api/add-skill-config :glob-pattern :expression :schedule :scope :parserType)
             (api/skip-push-if-atomist-edited)
             (api/status :send-status (fn [request]
                                        (if (:pull-request-number request)
                                          (gstring/format "**StringReplaceSkill** handled Push Event:  [PR raised](%s)" (pr-link request))
                                          "Push event handler completed without raising PullRequest")))) request)
+
+       (contains? (:data request) :OnSchedule)
+       ((-> (api/finished :message "String-Replace scheduled")
+            (api/repo-iterator (fn [request ref] (repo-filter/ref-matches-repo-filter? request ref (:scope request)))
+                               (-> (api/finished)
+                                   (run-editors)
+                                   (api/edit-inside-PR :pr-config)
+                                   (api/clone-ref)
+                                   (check-for-new-pull-request)))
+            (check-config)
+            (add-default-glob-pattern)
+            (api/add-skill-config :glob-pattern :expression :scope :parserType)
+            (api/status :send-status (fn [request]
+                                       (let [c (->> (:plan request)
+                                                    (filter :pull-request-number)
+                                                    (count))]
+                                         (gstring/format "raised %d Pull Requests" c))))) request)
 
        :else
        (go

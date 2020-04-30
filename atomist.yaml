@@ -66,12 +66,12 @@ parameters:
       required: true
   - singleChoice:
       name: update
-      displayName: Update Strategy
-      description: Select how updates should be applied
+      displayName: Branch selection
+      description: Select which branches the skill should run on
       options:
-        - text: Raise Pull Requests on default branch only
+        - text: Default branch only
           value: pr_default
-        - text: Raise Pull Requests for all branches
+        - text: All branches
           value: pr
       required: true
       defaultValue: pr_default

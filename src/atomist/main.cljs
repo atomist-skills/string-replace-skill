@@ -321,18 +321,18 @@
          (api/finish request))))))
 
 (comment
- (enable-console-print!)
- (atomist.main/handler #js {:command "StringReplaceSkill"
-                            :source {:slack {:channel {:id "CDU23TC1H"}
-                                             :user {:id "UDF0NFB5M"}
-                                             :team {:id "TDDAK8WKT"}}}
-                            :correlation_id "corrid"
-                            :api_version "1"
-                            :team {:id "AK748NQC5"}
-                            :configurations [{:name "clj1"
-                                              :enabled true
-                                              :parameters [{:name "glob-pattern" :value "touch.txt"}
-                                                           {:name "expression" :value "s/counter: ([0-9]+)/counter: ${(inc 1)}/g"}]}]
-                            :raw_message "sed --configuration=clj1 --commit-on-master"
-                            :secrets [{:uri "atomist://api-key" :value (.. js/process -env -API_KEY_SLIMSLENDERSLACKS_STAGING)}]}
-                       (fn [& args] (go (cljs.pprint/pprint (first args))))))
+  (enable-console-print!)
+  (atomist.main/handler #js {:command "StringReplaceSkill"
+                             :source {:slack {:channel {:id "CDU23TC1H"}
+                                              :user {:id "UDF0NFB5M"}
+                                              :team {:id "TDDAK8WKT"}}}
+                             :correlation_id "corrid"
+                             :api_version "1"
+                             :team {:id "AK748NQC5"}
+                             :configurations [{:name "clj1"
+                                               :enabled true
+                                               :parameters [{:name "glob-pattern" :value "touch.txt"}
+                                                            {:name "expression" :value "s/counter: ([0-9]+)/counter: ${(inc 1)}/g"}]}]
+                             :raw_message "sed --configuration=clj1 --commit-on-master"
+                             :secrets [{:uri "atomist://api-key" :value (.. js/process -env -API_KEY_SLIMSLENDERSLACKS_STAGING)}]}
+                        (fn [& args] (go (cljs.pprint/pprint (first args))))))

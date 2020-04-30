@@ -8,16 +8,11 @@ If there are matches, this skill will create a pull request with the proposed ch
 
 # What it's useful for
 
-Use this skill to schedule a String Replace operation to run against any of your repos 
-whenever one of the following occurs: 
+Make updates to code and configuration across your entire codebase. Automatically update files across all selected repositories based on a regular expression.
 
-1. a set of Commits is pushed to a Repository
-2. a regularly scheduled event like "once per day", "every Tuesday", "first day of each month", etc.
-3. when a user types `@atomist string-replace` into a Slack channel of which `@atomist` is a member
-
-The String Replace operations are declared using regular expression.  Each configuration of this
-skill can have it's own regular expression.  If the string replace operation results in a change to the 
-code, the skill will raise a pull request.
+* Update configuration, code, documentation or any file in your repositories
+* Rename packages across an entire codebase
+* Update information needing periodic revision like dates, licenses, comment blocks
 
 # Before you get started
 
@@ -26,42 +21,63 @@ Connect and configure these integrations:
 1. **GitHub**
 2. **Slack** (optional)
 
-This skill creates GitHub Pull Requests.
-Therefore, user will need to configure a GitHub integration the skill can be enabled.  We've also
-added an optional Slack Command to this skill.  If Slack is enabled, string replacements can be
-run directly from Slack.
+This skill raises pull requests. The GitHub integration must be configured in order to use this skill. At least one repository must be selected.
 
-Atomist can make pull requests visible, and actionable, in Slack by 
-enabling the GitHub notifications skill.  GitHub notifications are optional but the string replace skill works
-great with the GitHub notifications skill.  Other skills that work well with this skill are:
-
-* atomist/github-auto-rebase-skill
-* atomist/github-auto-merge-skill
-* atomist/github-branch-deletion-skill
+When the optional Slack integration is enabled, users can run String Replace directly from Slack.
  
 # How to configure
 
-The first thing to think about is the regular expression you want to run, and which files you want it to run on
+1. **Select the files to scan**
+
+To restrict the files that this skill will run on, provide one or more [glob patterns](https://en.wikipedia.org/wiki/Glob_(programming)). 
+    For example, to only run on YAML files with `.yaml` or `.yml` extensions at any depth in the repository, 
+    you would provide this glob pattern:
+    
+    `*.yaml,*.yml`
+    
+The glob pattern is optional.  If not specified, the expression will run on all of the files in the selected repositories.
 
 ![regular expression](docs/image/screenshot1.png)
 
-The `expression` is required.  The `glob-pattern` is optional.  If not included, the expression will run
-on all the files in the Repo.
+2. **Enter a substitution expression**
 
-Each configuration of this skill declares a string replace `expression`, a set of applicable repositories 
-(including _all_ repositories), and whether or not the operation should run on a cron schedule, or on every change.
+Enter the expression to match and substitute. This will always start with `s/` and eng with `/g` which tells the skill to do a *global* replacement, replacing all matches found. ( `/g` is the only option supported). 
 
-![schedule](docs/image/screenshot2.png)
+For example, to perform the snake case to camel case conversion, this substitution expression would accomplish the job:
 
-If a user enters a [cron expression](), the operation will run on that schedule.  Without a cron expression, the
-operations runs on every `Push` to the repository.  For `Push` schedules string replace operations, the user can 
-choose whether or not the operation should run on Pushes to non-default branch refs (ie only master branches).  
+`s/([a-zA-Z]*?)_([a-zA-Z])/$1\U$2/g`
+
+For help crafting and testing your regular expressions, try [this online tool](https://regex101.com/) and see [this guide](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions/Cheatsheet).
+
+3. **Select how to update**
+ 
+Select whether the skill should run on pushes to default branch refs (ie only master branches).  
 
 ![schedule](docs/image/screenshot3.png)
 
-Cron based schedules only run on the default branch.  For many repositories, this means master only. 
+Cron based schedules only run on the default branch.
+
+
+4. **Set to run on a schedule**
+
+![schedule](docs/image/screenshot2.png)
+
+To run on a schedule, enter a [cron schedule](https://en.wikipedia.org/wiki/Cron). If no cron schedule is set, the
+skill runs on every `Push` to a selected repository.
+
+---
 
 ## How to use this skill
+
+Use this skill to run a String Replace operation against any of your repos 
+whenever one of the following occurs: 
+
+* A set of Commits is pushed to a Repository
+* A regularly scheduled event like "once per day", "every Tuesday", "first day of each month", etc.
+* A user runs the `@atomist string-replace` command in a Slack channel of which `@atomist` is a member
+
+The String Replace operations are declared using regular expression. If the string replace operation results in a change to one or more files in a repository, a pull request with the changes will be raised.
+
 
 Try to start with the strings you want to capture.  Perhaps you hear a request like:
 

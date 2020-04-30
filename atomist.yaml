@@ -1,68 +1,55 @@
-#
-#  Copyright © 2019 Atomist, Inc.
-#
-#  Licensed under the Apache License, Version 2.0 (the "License");
-#  you may not use this file except in compliance with the License.
-#  You may obtain a copy of the License at
-#
-#      http://www.apache.org/licenses/LICENSE-2.0
-#
-#  Unless required by applicable law or agreed to in writing, software
-#  distributed under the License is distributed on an "AS IS" BASIS,
-#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-#  See the License for the specific language governing permissions and
-#  limitations under the License.
-#
-
 skill:
-  name: atomist/string-replace-skill
-  title: String Replace
-  author: Atomist
   description: Automatically replace strings in files based on a regular expression
-  long_description: |
-    Automatically replace strings in files based on a regular expression.
-    - Update configuration, code, documentation or any file in your codebase
-    - Rename packages across an entire codebase
-    - Update information needing periodic revision like dates, licenses, comment blocks
   category:
-  - DEV_EX
-  license: Apache-2.0
-  homepage: https://github.com/atomist-skills/string-replace-skill
-  repository: https://github.com/atomist-skills/string-replace-skill
-  icon: https://images.atomist.com/rug/regex.png
-  video: https://images.atomist.com/skills/string-replace.gif
-  dispatch: multiple
-
+    - DEV_EX
+  video: 'https://images.atomist.com/skills/string-replace.gif'
   package:
     use: atomist/package-cljs-skill
+  repository: 'https://github.com/atomist-skills/string-replace-skill'
+  license: Apache-2.0
+  homepage: 'https://github.com/atomist-skills/string-replace-skill'
+  name: atomist/string-replace-skill
+  long_description: >
+    Automatically replace strings in files based on a regular expression.
 
+    - Update configuration, code, documentation or any file in your codebase
+
+    - Rename packages across an entire codebase
+
+    - Update information needing periodic revision like dates, licenses, comment
+    blocks
+  icon: 'https://images.atomist.com/rug/regex.png'
+  title: String Replace
+  author: Atomist
+  dispatch: multiple
   runtime:
     name: nodejs10
     entry_point: eventhandler
     memory: 1024
     timeout: 120
-
 commands:
   - name: StringReplaceSkill
-    description: "Invoke the StringReplaceSkill on a linked repository"
-    pattern: "^string-replace .*$"
+    description: Invoke the StringReplaceSkill on a linked repository
+    pattern: ^string-replace .*$
   - name: FindUrlSkill
-    description: "Find all urls in the codebase"
-    pattern: "^find-by-regex .*$"
-
+    description: Find all urls in the codebase
+    pattern: ^find-by-regex .*$
 parameters:
   - string:
-      description: "Enter comma-separated glob patterns.  If no glob pattern is entered, the string replacement will run on all the files in the selected repositories."
-      displayName: "Replace in files"
-      name: "glob-pattern"
-      placeHolder: "README.md,**/*.html"
+      description: >-
+        Enter comma-separated glob patterns.  If no glob pattern is entered, the
+        string replacement will run on all the files in the selected
+        repositories.
+      displayName: Replace in files
+      name: glob-pattern
+      placeHolder: 'README.md,**/*.html'
       required: false
   - string:
-      description: "Enter string replacement expression (supports only the 'g' option)"
-      displayName: "Substitution expression"
-      name: "expression"
-      placeHolder: "s/search/replace/g"
-      pattern: "s/.*/.*/g?"
+      description: Enter string replacement expression (supports only the 'g' option)
+      displayName: Substitution expression
+      name: expression
+      placeHolder: s/search/replace/g
+      pattern: s/.*/.*/g?
       required: true
   - singleChoice:
       name: update
@@ -75,29 +62,13 @@ parameters:
           value: pr
       required: true
       defaultValue: pr_default
-#  - singleChoice:
-#      description: "Choose a regex parser"
-#      displayName: "Regex Parser Type"
-#      name: "parserType"
-#      required: true
-#      defaultValue: "basic"
-#      options:
-#        - description: "basic regular expression syntax used by sed"
-#          text: "basic (BRE)"
-#          value: "basic"
-#        - description: "extended regular expression syntax"
-#          text: "extended (modern)"
-#          value: "extended"
-#        - description: "Syntax with extensions derived originally from Perl (as implemented in Node.js)"
-#          text: "Perl-derivative"
-#          value: "perl"
   - schedule:
-      description: "Run this regex on every Push OR provide a cron schedule."
-      displayName: "Cron Schedule"
-      name: "schedule"
+      description: Run this regex on every Push OR provide a cron schedule.
+      displayName: Cron Schedule
+      name: schedule
       required: false
   - repoFilter:
-      description: "The set of Repositories for this String Replace rule."
-      displayName: "Which repositories"
-      name: "scope"
+      description: The set of Repositories for this String Replace rule.
+      displayName: Which repositories
+      name: scope
       required: false

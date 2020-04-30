@@ -2,7 +2,6 @@
   (:require [cljs.pprint :refer [pprint]]
             [cljs.core.async :refer [<! >! timeout chan]]
             [clojure.string :as s]
-            [goog.crypt.base64 :as b64]
             [goog.string :as gstring]
             [goog.string.format]
             [atomist.cljs-log :as log]
@@ -10,7 +9,6 @@
             [atomist.sdmprojectmodel :as sdm]
             [atomist.json :as json]
             [atomist.api :as api]
-            [atomist.promise :as promise]
             [atomist.github :as github]
             [cljs-node-io.proc :as proc]
             [cljs-node-io.core :as io]
@@ -43,6 +41,22 @@
         (<! (api/snippet-message request (json/->str file-matches) "application/json" "title"))
         (<! (handler request))))))
 
+(defn eval-captures [exp captures]
+  (let [form (cljs.reader/read-string exp)]
+    (cond
+      (= 'inc (first form))
+      (inc (js/parseInt (nth captures (second form))))
+      :else
+      exp)))
+
+(defn process-replace [replace captures]
+  (reduce
+   (fn [agg [token exp]]
+     (println "token exp " token exp)
+     (clojure.string/replace agg token (str (eval-captures exp captures))))
+   replace
+   (re-seq #"\$\{(.*?)\}" replace)))
+
 (defn content-editor
   "compile an editor
      the editor uses a JavaScript RegEx to do a search and replace on the content in a File
@@ -51,9 +65,17 @@
   [search-regex replace opts]
   (fn [f content]
     (go
-      (let [p (re-pattern search-regex)]
-        (if (s/starts-with? opts "g")
-          {:new-content (s/replace-all content p replace)}
+      (let [p (re-pattern search-regex)
+            matches (re-find p content)]
+        (println matches)
+        (cond
+          (and
+           matches
+           (coll? matches)
+           (> (count matches) 1)
+           (re-find #"\$\{(.*?)\}" replace))
+          {:new-content (s/replace content p (process-replace replace matches))}
+          :else
           {:new-content (s/replace content p replace)})))))
 
 (defn file-stream-editor
@@ -89,12 +111,12 @@
     params
       request
       content-editor (File String) => String"
-  [request editor]
+  [request]
   (fn [f]
     (go
       (try
         (let [content (<! (sdm/get-content f))
-              {:keys [error new-content]} (<! (editor f content))]
+              {:keys [error new-content]} (<! ((:editor request) f content))]
           (cond
             (= content new-content)
             (log/debug "content not changed")
@@ -113,7 +135,9 @@
                   (-> config-name (s/replace-all #"\s" ""))
                   branch-name))
 
-(defn check-config [handler]
+(defn check-config
+  "prepare editor based on configuration"
+  [handler]
   (fn [request]
     (go
       (if (and (:expression request) (:glob-pattern request))
@@ -143,7 +167,9 @@
           (log/warn "run-editors requires both a glob-pattern and an expression")
           (<! (api/finish request :failure "configuration did not contain `expression` and `glob-pattern`")))))))
 
-(defn check-for-new-pull-request [handler]
+(defn check-for-new-pull-request
+  "set up branch-name and watch for new pull requests if they occur"
+  [handler]
   (fn [request]
     (go
       (let [branch (-> request :configuration :name (config->branch-name (or (:branch request) (-> request :ref :branch))))]
@@ -165,7 +191,7 @@
   [handler]
   (fn [request]
     (go
-      (<! ((-> (compile-simple-content-editor request (:editor request))
+      (<! ((-> (compile-simple-content-editor request)
                (editors/do-with-glob-patterns (s/split (:glob-pattern request) #","))
                (editors/check-do-with-glob-patterns-errors)) (:project request)))
       (<! (handler request)))))
@@ -242,7 +268,8 @@
                                             :required true
                                             :pattern ".*"
                                             :validInput "must be a valid configuration name"})
-            (api/extract-cli-parameters [[nil "--configuration PATTERN" "existing configuration"]])
+            (api/extract-cli-parameters [[nil "--configuration PATTERN" "existing configuration"]
+                                         [nil "--commit-on-master"]])
             (api/set-message-id)
             (api/status :send-status (fn [request]
                                        (if (:pull-request-number request)
@@ -292,3 +319,20 @@
        (go
          (log/errorf "Unrecognized event %s" request)
          (api/finish request))))))
+
+(comment
+ (enable-console-print!)
+ (atomist.main/handler #js {:command "StringReplaceSkill"
+                            :source {:slack {:channel {:id "CDU23TC1H"}
+                                             :user {:id "UDF0NFB5M"}
+                                             :team {:id "TDDAK8WKT"}}}
+                            :correlation_id "corrid"
+                            :api_version "1"
+                            :team {:id "AK748NQC5"}
+                            :configurations [{:name "clj1"
+                                              :enabled true
+                                              :parameters [{:name "glob-pattern" :value "touch.txt"}
+                                                           {:name "expression" :value "s/counter: ([0-9]+)/counter: ${(inc 1)}/g"}]}]
+                            :raw_message "sed --configuration=clj1 --commit-on-master"
+                            :secrets [{:uri "atomist://api-key" :value (.. js/process -env -API_KEY_SLIMSLENDERSLACKS_STAGING)}]}
+                       (fn [& args] (go (cljs.pprint/pprint (first args))))))

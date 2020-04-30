@@ -49,13 +49,11 @@ For example, to perform the snake case to camel case conversion, this substituti
 
 For help crafting and testing your regular expressions, try [this online tool](https://regex101.com/) and see [this guide](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions/Cheatsheet).
 
-3. **Select how to update**
+3. **Select branch policy**
  
-Select whether the skill should run on pushes to default branch refs (ie only master branches).  
+Select whether the skill should run on pushes to the default branch only, or all branches. 
 
 ![schedule](docs/image/screenshot3.png)
-
-Cron based schedules only run on the default branch.
 
 
 4. **Set to run on a schedule**
@@ -64,6 +62,8 @@ Cron based schedules only run on the default branch.
 
 To run on a schedule, enter a [cron schedule](https://en.wikipedia.org/wiki/Cron). If no cron schedule is set, the
 skill runs on every `Push` to a selected repository.
+
+When run on a schedule, this skill only runs on the default branch.
 
 ---
 

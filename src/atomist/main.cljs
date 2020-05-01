@@ -271,6 +271,7 @@
             (api/clone-ref)
             (check-config)
             (check-for-new-pull-request)
+            (log-attempt)
             (api/add-skill-config-by-configuration-parameter :configuration :glob-pattern :expression :scope :update)
             (api/create-ref-from-first-linked-repo)
             (api/extract-linked-repos)
@@ -334,16 +335,16 @@
 (comment
   (enable-console-print!)
   (atomist.main/handler #js {:command "StringReplaceSkill"
-                             :source {:slack {:channel {:id "CDU23TC1H"}
-                                              :user {:id "UDF0NFB5M"}
-                                              :team {:id "TDDAK8WKT"}}}
+                             :source {:slack {:channel {:id "CH2QJJ0MA"}
+                                              :user {:id "U2ATJPCSK"}
+                                              :team {:id "T29E48P34"}}}
                              :correlation_id "corrid"
                              :api_version "1"
-                             :team {:id "AK748NQC5"}
-                             :configurations [{:name "clj1"
+                             :team {:id "T29E48P34"}
+                             :configurations [{:name "Snake case to camel case for YAML"
                                                :enabled true
-                                               :parameters [{:name "glob-pattern" :value "touch.txt"}
-                                                            {:name "expression" :value "s/counter: ([0-9]+)/counter: ${(inc 1)}/g"}]}]
-                             :raw_message "sed --configuration=clj1 --commit-on-master"
-                             :secrets [{:uri "atomist://api-key" :value (.. js/process -env -API_KEY_SLIMSLENDERSLACKS_STAGING)}]}
+                                               :parameters [{:name "glob-pattern" :value "*.yaml,*.yml"}
+                                                            {:name "expression" :value "s/([a-zA-Z]*?)_([a-zA-Z])/$1\\U$2/g"}]}]
+                             :raw_message "sed --configuration=\"Snake case to camel case for YAML\""
+                             :secrets [{:uri "atomist://api-key" :value (.. js/process -env -API_KEY_SLIMSLENDERSLACKS_PROD_GITHUB_AUTH)}]}
                         (fn [& args] (go (cljs.pprint/pprint (first args))))))

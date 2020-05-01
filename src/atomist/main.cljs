@@ -65,18 +65,24 @@
   [search-regex replace opts]
   (fn [f content]
     (go
-      (let [p (re-pattern search-regex)
-            matches (re-find p content)]
-        (println matches)
-        (cond
-          (and
-           matches
-           (coll? matches)
-           (> (count matches) 1)
-           (re-find #"\$\{(.*?)\}" replace))
-          {:new-content (s/replace content p (process-replace replace matches))}
-          :else
-          {:new-content (s/replace content p replace)})))))
+      (try
+        (api/trace "content-editor")
+        (log/infof "%s --- %s --- %s"  search-regex replace content)
+        (if content
+          (let [p (re-pattern search-regex)
+                matches (re-find p content)]
+            (log/info "matches: " matches)
+            (cond
+              (and
+               matches
+               (coll? matches)
+               (> (count matches) 1)
+               (re-find #"\$\{(.*?)\}" replace))
+              {:new-content (s/replace content p (process-replace replace matches))}
+              :else
+              {:new-content (s/replace content p replace)})))
+        (catch :default ex
+          (log/errorf "failed to run content-editor:  %s" ex))))))
 
 (defn file-stream-editor
   "compile an editor
@@ -114,6 +120,7 @@
   [request]
   (fn [f]
     (go
+      (api/trace "compile-simple-content-editor")
       (try
         (let [content (<! (sdm/get-content f))
               {:keys [error new-content]} (<! ((:editor request) f content))]
@@ -140,6 +147,7 @@
   [handler]
   (fn [request]
     (go
+      (api/trace "check-config")
       (if (and (:expression request) (:glob-pattern request))
         (if-let [editor (cond
                           (#{"basic" "extended"} (:parserType request))
@@ -172,8 +180,10 @@
   [handler]
   (fn [request]
     (go
+      (api/trace "check-for-new-pull-request(enter)")
       (let [branch (-> request :configuration :name (config->branch-name (or (:branch request) (-> request :ref :branch))))]
         (let [response (<! (handler (assoc request :branch-name branch)))]
+          (api/trace "check-for-new-pull-request(exit)")
           (let [pullRequest (<! (github/pr-channel request branch))]
             (assoc response :pull-request-number (:number pullRequest))))))))
 
@@ -191,6 +201,7 @@
   [handler]
   (fn [request]
     (go
+      (api/trace "run-editors")
       (<! ((-> (compile-simple-content-editor request)
                (editors/do-with-glob-patterns (s/split (:glob-pattern request) #","))
                (editors/check-do-with-glob-patterns-errors)) (:project request)))

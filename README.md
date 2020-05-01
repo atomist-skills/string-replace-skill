@@ -110,7 +110,7 @@ When the optional Slack integration is enabled, users can run String Replace dir
     Trigger a string replacement from a Slack channel by running
 
     ```
-    `@atomist string-replace --configuration="Snake case to camel case for YAML"`
+    @atomist string-replace --configuration="Snake case to camel case for YAML"
     ``` 
 
     where `configuration` is the name of a saved String Replace skill configuration that you created.

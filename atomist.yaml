@@ -36,13 +36,10 @@ commands:
     pattern: ^find-by-regex .*$
 parameters:
   - string:
-      description: >-
-        Enter comma-separated glob patterns.  If no glob pattern is entered, the
-        string replacement will run on all the files in the selected
-        repositories.
-      displayName: Replace in files
-      name: glob-pattern
-      placeHolder: 'README.md,**/*.html'
+      description: "Add one or more glob patterns. If no glob pattern is entered, the skill will run on all the files in the selected repositories."
+      displayName: "Replace in files"
+      name: "glob-pattern"
+      placeHolder: "README.md,**/*.html"
       required: false
   - string:
       description: Enter string replacement expression (supports only the 'g' option)

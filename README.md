@@ -8,16 +8,12 @@ If there are matches, this skill will create a pull request with the proposed ch
 
 # What it's useful for
 
-Use this skill to schedule a String Replace operation to run against any of your repos 
-whenever one of the following occurs: 
+Make updates to code and configuration across your entire codebase. Automatically update files across all selected repositories based on a regular expression. Schedule the updates, run on push or run as a command via the Atomist Slack bot.
 
-1. a set of Commits is pushed to a Repository
-2. a regularly scheduled event like "once per day", "every Tuesday", "first day of each month", etc.
-3. when a user types `@atomist string-replace` into a Slack channel of which `@atomist` is a member
-
-The String Replace operations are declared using regular expression.  Each configuration of this
-skill can have it's own regular expression.  If the string replace operation results in a change to the 
-code, the skill will raise a pull request.
+* Update configuration, code, documentation or any files in your repositories
+* Automatically update READMEs in active projects to show that they are still active
+* Rename packages across an entire codebase
+* Update information needing periodic revision like dates, licenses, comment blocks
 
 # Before you get started
 
@@ -26,69 +22,107 @@ Connect and configure these integrations:
 1. **GitHub**
 2. **Slack** (optional)
 
-This skill creates GitHub Pull Requests.
-Therefore, user will need to configure a GitHub integration the skill can be enabled.  We've also
-added an optional Slack Command to this skill.  If Slack is enabled, string replacements can be
-run directly from Slack.
+This skill raises pull requests. The GitHub integration must be configured in order to use this skill. At least one repository must be selected.
 
-Atomist can make pull requests visible, and actionable, in Slack by 
-enabling the GitHub notifications skill.  GitHub notifications are optional but the string replace skill works
-great with the GitHub notifications skill.  Other skills that work well with this skill are:
-
-* atomist/github-auto-rebase-skill
-* atomist/github-auto-merge-skill
-* atomist/github-branch-deletion-skill
+When the optional Slack integration is enabled, users can run String Replace directly from Slack.
  
 # How to configure
 
-The first thing to think about is the regular expression you want to run, and which files you want it to run on
+1. **Select the files to scan**
 
-![regular expression](docs/image/screenshot1.png)
+    To restrict the files that this skill will run on, provide one or more 
+    [glob patterns](https://en.wikipedia.org/wiki/Glob_(programming)). 
+    For example, to only run on YAML files with `.yaml` or `.yml` extensions at any depth in the repository, 
+    you would provide this glob pattern:
+    
+    `*.{yaml,yml}`
+    
+    ![File glob](docs/images/file-pattern.png)
+    
+    The glob pattern is optional.  If not specified, the expression will run on all of the files in the selected repositories.
 
-The `expression` is required.  The `glob-pattern` is optional.  If not included, the expression will run
-on all the files in the Repo.
+2. **Enter a substitution expression**
 
-Each configuration of this skill declares a string replace `expression`, a set of applicable repositories 
-(including _all_ repositories), and whether or not the operation should run on a cron schedule, or on every change.
+    Enter the expression to match and substitute. This will always start with `s/` and eng with `/g` which tells 
+    the skill to do a *global* replacement, replacing all matches found. ( `/g` is the only option supported). 
+    
+    For example, to perform the snake case to camel case conversion, this substitution expression would accomplish the job:
+    
+    `s/([a-zA-Z]*?)_([a-zA-Z])/$1\U$2/g`
+    
+    For help crafting and testing your regular expressions, try [this online tool](https://regex101.com/) and 
+    see [this guide](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions/Cheatsheet).
 
-![schedule](docs/image/screenshot2.png)
+3. **Select branch policy**
+ 
+    Select whether the skill should run on pushes to the default branch only, or all branches. 
 
-If a user enters a [cron expression](), the operation will run on that schedule.  Without a cron expression, the
-operations runs on every `Push` to the repository.  For `Push` schedules string replace operations, the user can 
-choose whether or not the operation should run on Pushes to non-default branch refs (ie only master branches).  
+    ![branch_policy](docs/images/branch-policy.png)
 
-![schedule](docs/image/screenshot3.png)
+4. **Set to run on a schedule**
 
-Cron based schedules only run on the default branch.  For many repositories, this means master only. 
+    ![schedule](docs/images/screenshot2.png)
+    
+    To run on a schedule, enter a [cron schedule](https://en.wikipedia.org/wiki/Cron). If no cron schedule is set, 
+    the skill runs on every push to a selected repository.
+    
+    When run on a schedule, this skill only runs on the default branch.
 
-## How to use this skill
+5. **Determine repository scope**
 
-Try to start with the strings you want to capture.  Perhaps you hear a request like:
+    ![Repository filter](docs/images/repo-filter.png)
 
-> Someone should write a bot that updates the year 
-> on your Clojure project's readme so projects that still work don't look old.
+    By default, this skill will be enabled for all repositories in all organizations you have connected.
 
-Create a configuration of this skill representing this requirement.  For help crafting 
-and testing your regular expressions, try [this online tool](https://regex101.com/) 
-and see [this guide](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions/Cheatsheet).
+    To restrict the organizations or specific repositories on which the skill will run, you can explicitly choose 
+    organization(s) and repositories.
 
-Combining capture groups and back references can be surprisingly powerful.  A yaml snake case to camel case converter like:
+---
 
-`s/([a-zA-Z]*?)_([a-zA-Z])/$1\U$2/g`
+## How to use String Replace
 
-could be applied to all files matching the [glob patterns](https://en.wikipedia.org/wiki/Glob_(programming)) `*.yaml,*.yml` and then triggered from slack 
-by typing:
+1. **Configure the skill, enter a substitution expression, branch policy and repository scope** 
 
-```
-`@atomist string-replace --configuration="Snake case → camel case for YAML"`
-``` 
+    Combining capture groups and back references in your substitution expression can be surprisingly powerful.  
+    A YAML [snake case](https://en.wikipedia.org/wiki/Snake_case) to 
+    [camel case](https://en.wikipedia.org/wiki/Camel_case) converter like this could be applied to all files 
+    matching the [glob patterns](https://en.wikipedia.org/wiki/Glob_(programming)) `*.yaml,*.yml`
 
-where `configuration` is a name of one of your skill's configurations.  This skill will only create pull requests.  It
-will never add a Commit to an existing branch ref.
+    `s/([a-zA-Z]*?)_([a-zA-Z])/$1\U$2/g`
+    
+    Use the repository selector to limit the skill to a select set of repositories.  However, useful search replace 
+    operations can be easily shared too.  Just let the skill see a larger set of repositories.  Some operations 
+    are useful on _all_ of your repositories.
 
-Use the repo filter to limit the skill to a select set of repositories.  However, useful search replace operations can
-be easily shared too.  Just let the skill see a larger set of Repositories.  Some operations are useful on _all_ of your
-repositories.
+
+2. **The skill runs on new pushes to a repository or your defined schedule**
+
+    
+    If any files were changed, a pull request will be raised with the changes. 
+    This skill will never commit directly to an existing branch.
+    
+    ![pull_request](docs/images/pull-request.png)
+
+3. **Run a string replacement from Slack**
+
+    ![slack_cmd](docs/images/slack-command.png)
+
+    Trigger a string replacement from a Slack channel by running
+
+    ```
+    @atomist string-replace --configuration="Snake case to camel case for YAML"
+    ``` 
+
+    where `configuration` is the name of a saved String Replace skill configuration that you created.
+    In this case, the skill configuration name is `Snake case to camel case for YAML`.
+    
+    ![config_name](docs/images/configuration-name.png)
+
+4. **Don't be afraid to roll out that big naming change or deprecate that library!**
+
+    To create feature requests or bug reports, create an 
+    [issue in the repository for this skill](https://github.com/atomist-skills/string-replace-skill/issues). 
+    See the [code](https://github.com/atomist-skills/string-replace-skill) for the skill.
 
 <!---atomist-skill-readme:end--->
 

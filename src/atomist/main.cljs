@@ -300,7 +300,6 @@
             (log-attempt)
             (api/extract-github-token)
             (skip-if-not-master)
-            #_(api/apply-repo-filter :scope)
             (api/create-ref-from-push-event)
             (add-default-glob-pattern)
             (api/add-skill-config :glob-pattern :expression :schedule :scope :parserType)

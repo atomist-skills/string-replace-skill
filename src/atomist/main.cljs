@@ -331,20 +331,3 @@
        (go
          (log/errorf "Unrecognized event %s" request)
          (api/finish request))))))
-
-(comment
-  (enable-console-print!)
-  (atomist.main/handler #js {:command "StringReplaceSkill"
-                             :source {:slack {:channel {:id "CH2QJJ0MA"}
-                                              :user {:id "U2ATJPCSK"}
-                                              :team {:id "T29E48P34"}}}
-                             :correlation_id "corrid"
-                             :api_version "1"
-                             :team {:id "T29E48P34"}
-                             :configurations [{:name "Snake case to camel case for YAML"
-                                               :enabled true
-                                               :parameters [{:name "glob-pattern" :value "*.yaml,*.yml"}
-                                                            {:name "expression" :value "s/([a-zA-Z]*?)_([a-zA-Z])/$1\\U$2/g"}]}]
-                             :raw_message "sed --configuration=\"Snake case to camel case for YAML\""
-                             :secrets [{:uri "atomist://api-key" :value (.. js/process -env -API_KEY_SLIMSLENDERSLACKS_PROD_GITHUB_AUTH)}]}
-                        (fn [& args] (go (cljs.pprint/pprint (first args))))))

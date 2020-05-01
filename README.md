@@ -57,11 +57,11 @@ When the optional Slack integration is enabled, users can run String Replace dir
  
     Select whether the skill should run on pushes to the default branch only, or all branches. 
 
-    ![schedule](docs/image/screenshot3.png)
+    ![branch_policy](docs/images/branch-policy.png)
 
 4. **Set to run on a schedule**
 
-    ![schedule](docs/image/screenshot2.png)
+    ![schedule](docs/images/screenshot2.png)
     
     To run on a schedule, enter a [cron schedule](https://en.wikipedia.org/wiki/Cron). If no cron schedule is set, 
     the skill runs on every push to a selected repository.

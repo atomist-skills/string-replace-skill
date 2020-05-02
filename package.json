@@ -10,7 +10,7 @@
   "dependencies": {
     "copyright-regex": "^1.1.6",
     "regex-email": "^1.0.2",
-    "@atomist/skill-logging": "0.1.0-master.20200306143401",
+    "@atomist/skill-logging": "0.1.0-master.20200316180914",
     "shell-quote": "^1.7.2",
     "@atomist/automation-client": "^1.7.0",
     "@google-cloud/pubsub": "^1.0.0",

@@ -30,14 +30,14 @@ skill:
 resource_providers:
   - name: github
     description: GitHub
-    type_name: GitHubAppResourceProvider
-    min_required: 1
-    max_allowed: 1
+    typeName: GitHubAppResourceProvider
+    minRequired: 1
+    maxAllowed: 1
   - name: slack
     description: Slack
-    type_name: SlackResourceProvider
-    min_required: 0
-    max_allowed: 1
+    typeName: SlackResourceProvider
+    minRequired: 0
+    maxAllowed: 1
 commands:
   - name: StringReplaceSkill
     description: Invoke the StringReplaceSkill on a linked repository

@@ -48,7 +48,7 @@ When the optional Slack integration is enabled, users can run String Replace dir
     
     For example, to perform the snake case to camel case conversion, this substitution expression would accomplish the job:
     
-    `s/([a-zA-Z]*?)_([a-zA-Z])/$1\U$2/g`
+    `s/([a-zA-Z]*?)_([a-zA-Z])/$1\u$2/g`
     
     For help crafting and testing your regular expressions, try [this online tool](https://regex101.com/) and 
     see [this guide](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions/Cheatsheet).

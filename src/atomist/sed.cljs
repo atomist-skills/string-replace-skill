@@ -23,14 +23,14 @@
       (let [path (. ^js f -realPath)]
         (log/debugf "spawn sed on %s for file %s" s path)
         (go
-         (let [[error stdout stderr] (<! (proc/aexec (gstring/format "sed %s '%s' %s"
-                                                                     (if (= type "extended") "-E" "")
-                                                                     s
-                                                                     path)))]
-           (if error
-             (do
-               (log/errorf "stderr:  %s" stderr)
-               {:error stderr})
-             {:new-content (if (string? stdout)
-                             stdout
-                             (io/slurp stdout))})))))))
+          (let [[error stdout stderr] (<! (proc/aexec (gstring/format "sed %s '%s' %s"
+                                                                      (if (= type "extended") "-E" "")
+                                                                      s
+                                                                      path)))]
+            (if error
+              (do
+                (log/errorf "stderr:  %s" stderr)
+                {:error stderr})
+              {:new-content (if (string? stdout)
+                              stdout
+                              (io/slurp stdout))})))))))

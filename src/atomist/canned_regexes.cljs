@@ -21,14 +21,14 @@
   [handler]
   (fn [request]
     (go
-     (let [data (<! ((sdm/do-with-files
-                      (fn [f]
-                        (go
-                         {(. ^js f -realPath) (into [] (re-seq url-regex (<! (sdm/get-content f))))}))
-                      (:glob-pattern request)) (:project request)))
-           file-matches (apply merge data)]
-       (<! (api/simple-message request (gstring/format "found %s urls over %s files"
-                                                       (reduce #(+ %1 (-> %2 vals first count)) 0 data)
-                                                       (count data))))
-       (<! (api/snippet-message request (json/->str file-matches) "application/json" "title"))
-       (<! (handler request))))))
+      (let [data (<! ((sdm/do-with-files
+                       (fn [f]
+                         (go
+                           {(. ^js f -realPath) (into [] (re-seq url-regex (<! (sdm/get-content f))))}))
+                       (:glob-pattern request)) (:project request)))
+            file-matches (apply merge data)]
+        (<! (api/simple-message request (gstring/format "found %s urls over %s files"
+                                                        (reduce #(+ %1 (-> %2 vals first count)) 0 data)
+                                                        (count data))))
+        (<! (api/snippet-message request (json/->str file-matches) "application/json" "title"))
+        (<! (handler request))))))

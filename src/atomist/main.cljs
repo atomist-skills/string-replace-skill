@@ -56,10 +56,10 @@
                           (#{"basic" "extended"} (:parserType request))
                           (sed/file-stream-editor (:expression request) :type (:parserType request))
                           (= "perl" (:parserType request))
-                          (let [[_ search replace opts] (re-find #"s/(.*)/(.*)/(g?)" (:expression request))]
+                          (let [[_ search replace opts] (re-find #"s/(.*)/(.*)/([gim]?)" (:expression request))]
                             (regex/content-editor search replace opts))
                           :else
-                          (let [[_ search replace opts] (re-find #"s/(.*)/(.*)/(g?)" (:expression request))]
+                          (let [[_ search replace opts] (re-find #"s/(.*)/(.*)/([gim]?)" (:expression request))]
                             (regex/content-editor search replace opts))
                           #_(file-stream-editor (:expression request)))]
           (<! (handler (assoc request

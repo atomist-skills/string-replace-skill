@@ -98,30 +98,30 @@
 
 (deftest subsitution-tests
   (async done
-    (go
-      (<! (is-test-expression
-           "abc" "1234" "g"
-           "go abc and abc then"
-           "go 1234 and 1234 then"))
-      (<! (is-test-expression
-           "\"counter\": (\\d+)"
-           "\"counter\": ${(inc 1)}"
-           "g"
-           "{\"counter\": 5 \"counter\": 7}"
-           "{\"counter\": 6 \"counter\": 8}"))
-      (<! (is-test-expression
-           "a(\\d+)b(\\d+)" "A$1B$2" "g"
-           "a1b2" "A1B2"))
-      (<! (is-test-expression
-           "([a-zA-Z]*?)_([a-zA-Z])" "$1\\u$2" "g"
-           "camel_case and more of_the_same"
-           "camelCase and more ofTheSame"))
-      (<! (is-test-expression
-           "([a-zA-Z]*?)_([a-zA-Z])" "$1\\U$2" "g"
-           "camel_case and more of_the_same"
-           "camelCase and more ofTheSame"))
-      (<! (is-test-expression
-           "([a-zA-Z]*?)_([a-zA-Z]+)" "$1\\U$2\\Estop" "g"
-           "camel_case and more of_the_same"
-           "camelCASEstop and more ofTHEstopSAMEstop"))
-      (done))))
+         (go
+           (<! (is-test-expression
+                "abc" "1234" "g"
+                "go abc and abc then"
+                "go 1234 and 1234 then"))
+           (<! (is-test-expression
+                "\"counter\": (\\d+)"
+                "\"counter\": ${(inc 1)}"
+                "g"
+                "{\"counter\": 5 \"counter\": 7}"
+                "{\"counter\": 6 \"counter\": 8}"))
+           (<! (is-test-expression
+                "a(\\d+)b(\\d+)" "A$1B$2" "g"
+                "a1b2" "A1B2"))
+           (<! (is-test-expression
+                "([a-zA-Z]*?)_([a-zA-Z])" "$1\\u$2" "g"
+                "camel_case and more of_the_same"
+                "camelCase and more ofTheSame"))
+           (<! (is-test-expression
+                "([a-zA-Z]*?)_([a-zA-Z])" "$1\\U$2" "g"
+                "camel_case and more of_the_same"
+                "camelCase and more ofTheSame"))
+           (<! (is-test-expression
+                "([a-zA-Z]*?)_([a-zA-Z]+)" "$1\\U$2\\Estop" "g"
+                "camel_case and more of_the_same"
+                "camelCASEstop and more ofTHEstopSAMEstop"))
+           (done))))

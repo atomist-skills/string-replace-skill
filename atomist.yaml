@@ -30,14 +30,14 @@ skill:
 resource_providers:
   - name: github
     description: GitHub
-    type_name: GitHubAppResourceProvider
-    min_required: 1
-    max_allowed: 1
+    typeName: GitHubAppResourceProvider
+    minRequired: 1
+    maxAllowed: 1
   - name: slack
     description: Slack
-    type_name: SlackResourceProvider
-    min_required: 0
-    max_allowed: 1
+    typeName: SlackResourceProvider
+    minRequired: 0
+    maxAllowed: 1
 commands:
   - name: StringReplaceSkill
     description: Invoke the StringReplaceSkill on a linked repository
@@ -46,20 +46,20 @@ commands:
     description: Find all urls in the codebase
     pattern: ^find-by-regex .*$
 parameters:
-  - string:
+  - stringArray:
       description: >-
         Add one or more glob patterns. If no glob pattern is entered, the skill
         will run on all the files in the selected repositories.
       displayName: Replace in files
       name: glob-pattern
-      placeHolder: 'README.md,**/*.html'
+      placeHolder: '**/*.html'
       required: false
   - string:
       description: Enter string replacement expression (supports only the 'g' option)
       displayName: Substitution expression
       name: expression
       placeHolder: s/search/replace/g
-      pattern: s/.*/.*/g?
+      pattern: 's/.*/.*/[gim]?'
       required: true
   - singleChoice:
       name: update

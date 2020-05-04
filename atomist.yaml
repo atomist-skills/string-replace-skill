@@ -59,7 +59,7 @@ parameters:
       displayName: Substitution expression
       name: expression
       placeHolder: s/search/replace/g
-      pattern: s/.*/.*/[gim]?
+      pattern: 's/.*/.*/[gim]?'
       required: true
   - singleChoice:
       name: update

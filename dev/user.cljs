@@ -75,7 +75,9 @@
    (.then
     (atomist.main/handler #js {:command "FindUrlSkill"
                                :source {:slack {:channel {:id "CTGGW07B6"}
-                                                :user {:id "UDF0NFB5M"}}}
+                                                :user {:id "UDF0NFB5M"}
+                                                :team {:id "TDDAK8WKT"
+                                                       :name "atm-staging"}}}
                                :api_version "1"
                                :correlation_id "corrid"
                                :team {:id "AK748NQC5"}
@@ -83,4 +85,5 @@
                                :secrets [{:uri "atomist://api-key" :value token}]}
                           fake-handler)
     (fn [v] (log/info "value " v)))
-   (fn [error] (log/error "error " error))))
+   (fn [error] (log/error "error " error)))
+ )

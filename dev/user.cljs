@@ -85,5 +85,4 @@
                                :secrets [{:uri "atomist://api-key" :value token}]}
                           fake-handler)
     (fn [v] (log/info "value " v)))
-   (fn [error] (log/error "error " error)))
- )
+   (fn [error] (log/error "error " error))))

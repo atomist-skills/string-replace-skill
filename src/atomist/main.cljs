@@ -51,7 +51,7 @@
   (fn [request]
     (go
       (api/trace "check-config")
-      (if (and (:expression request) (:glob-pattern request))
+      (if (and (:expression request) (:glob-pattern request) (not (empty? (:glob-pattern request))))
         (if-let [editor (cond
                           (#{"basic" "extended"} (:parserType request))
                           (sed/file-stream-editor (:expression request) :type (:parserType request))
@@ -69,7 +69,7 @@
                                           :title (-> request :configuration :name)
                                           :body (gstring/format "Ran string replacement `%s` on %s\n[atomist:edited]"
                                                                 (:expression request)
-                                                                (->> (s/split (:glob-pattern request) ",")
+                                                                (->> (:glob-pattern request)
                                                                      (map #(gstring/format "`%s`" %))
                                                                      (interpose ",")
                                                                      (apply str)))})))
@@ -107,7 +107,7 @@
 
       (api/trace "run-editors")
       (<! ((-> (compile-simple-content-editor request)
-               (editors/do-with-glob-patterns (s/split (:glob-pattern request) #","))
+               (editors/do-with-glob-patterns (:glob-pattern request))
                (editors/check-do-with-glob-patterns-errors)) (:project request)))
       (<! (handler request)))))
 
@@ -120,8 +120,10 @@
 (defn add-default-glob-pattern [handler]
   (fn [request]
     (go
-      (if (not (:glob-pattern request))
-        (<! (handler (assoc request :glob-pattern "**/*")))
+      (if (or
+           (not (:glob-pattern request))
+           (empty? (:glob-pattern request)))
+        (<! (handler (assoc request :glob-pattern ["**/*"])))
         (<! (handler request))))))
 
 (defn pr-link [request]
@@ -170,7 +172,14 @@
             (api/create-ref-from-first-linked-repo)
             (api/extract-linked-repos)
             (api/extract-github-user-token)
-            (api/extract-cli-parameters [[nil "--url" nil]])
+            (api/from (fn [request]
+                        (println "HEY")
+                        (log/info "globs " (:glob-pattern request)) :a) :key :whatever)
+            (api/from (fn [request]
+                        (println "HEY")
+                        (conj [] (:glob-pattern request))) :key :glob-pattern)
+            (api/extract-cli-parameters [[nil "--url" nil]
+                                         [nil "--glob-pattern PATTERN" "glob pattern"]])
             (api/set-message-id)
             (api/status))
         (assoc request :branch "master"))

@@ -25,7 +25,7 @@
                                :secrets [{:uri "atomist://api-key" :value token}]
                                :configuration {:name "whales->elephants"
                                                :parameters [{:name "expression" :value "s/whales/elephants/g"}
-                                                            {:name "glob-pattern" :value "README.md"}]}
+                                                            {:name "glob-pattern" :value ["README.md"]}]}
                                :extensions [:team_id "AK748NQC5"]}
                           fake-handler)
     (fn [v] (log/info "value " v)))
@@ -43,7 +43,7 @@
                                :secrets [{:uri "atomist://api-key" :value token}]
                                :configuration {:name "whales->elephants"
                                                :parameters [{:name "expression" :value "s/whales/elephants/g"}
-                                                            {:name "glob-pattern" :value "README.md"}]}
+                                                            {:name "glob-pattern" :value ["README.md"]}]}
                                :extensions [:team_id "AK748NQC5"]}
                           fake-handler)
     (fn [v] (log/info "value " v)))
@@ -76,6 +76,8 @@
     (atomist.main/handler #js {:command "FindUrlSkill"
                                :source {:slack {:channel {:id "CTGGW07B6"}
                                                 :user {:id "UDF0NFB5M"}}}
+                               :api_version "1"
+                               :correlation_id "corrid"
                                :team {:id "AK748NQC5"}
                                :raw_message "find-by-regex --url --glob-pattern=**/*"
                                :secrets [{:uri "atomist://api-key" :value token}]}

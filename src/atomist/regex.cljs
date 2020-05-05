@@ -34,16 +34,31 @@
            (if (not (first content))
              result
              (cond
+               ;; uppercase
+               (and
+                (< 2 (count content))
+                (= "\\" (first content))
+                (= "l" (second content)))
+               (recur (drop 3 content) (conj result (s/lower-case (nth content 2))) u l)
+               (and
+                (< 2 (count content))
+                (= "\\" (first content))
+                (= "L" (second content)))
+               (recur (drop 3 content) (conj result (s/lower-case (nth content 2))) false (not l))
+
+               ;; lowercase
                (and
                 (< 2 (count content))
                 (= "\\" (first content))
                 (= "u" (second content)))
-               (recur (drop 3 content) (conj result (s/capitalize (nth content 2))) u l)
+               (recur (drop 3 content) (conj result (s/upper-case (nth content 2))) u l)
                (and
                 (< 2 (count content))
                 (= "\\" (first content))
                 (= "U" (second content)))
-               (recur (drop 3 content) (conj result (s/capitalize (nth content 2))) (not u) false)
+               (recur (drop 3 content) (conj result (s/upper-case (nth content 2))) (not u) false)
+
+               ;; end upperlosercasing
                (and
                 (< 2 (count content))
                 (= "\\" (first content))
@@ -124,4 +139,8 @@
                 "([a-zA-Z]*?)_([a-zA-Z]+)" "$1\\U$2\\Estop" "g"
                 "camel_case and more of_the_same"
                 "camelCASEstop and more ofTHEstopSAMEstop"))
+           (<! (is-test-expression
+                "([a-z]*?)([A-Z]+)" "\\L$1_$2" "g"
+                "camelCase and more ofTheSame"
+                "camel_case and more of_the_same"))
            (done))))

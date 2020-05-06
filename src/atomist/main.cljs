@@ -147,7 +147,6 @@
   (fn [request]
     (go
       (api/trace "skip-if-configuration-has-schedule")
-      (log/infof "schedule %s" (:schedule request))
       (if (nil? (:schedule request))
         (<! (handler request))
         (<! (api/finish request :success "skip Pushes with schedules" :visibility :hidden))))))

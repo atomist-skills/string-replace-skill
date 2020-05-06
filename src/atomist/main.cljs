@@ -173,12 +173,8 @@
             (api/create-ref-from-first-linked-repo)
             (api/extract-linked-repos)
             (api/extract-github-user-token)
-            (api/from (fn [request]
-                        (println "HEY")
-                        (log/info "globs " (:glob-pattern request)) :a) :key :whatever)
-            (api/from (fn [request]
-                        (println "HEY")
-                        (conj [] (:glob-pattern request))) :key :glob-pattern)
+            (api/from (fn [request] (log/info "globs " (:glob-pattern request)) :a) :key :whatever)
+            (api/from (fn [request] (conj [] (:glob-pattern request))) :key :glob-pattern)
             (api/extract-cli-parameters [[nil "--url" nil]
                                          [nil "--glob-pattern PATTERN" "glob pattern"]])
             (api/set-message-id)

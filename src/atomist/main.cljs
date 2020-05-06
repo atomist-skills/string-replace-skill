@@ -146,10 +146,11 @@
 (defn skip-if-configuration-has-schedule [handler]
   (fn [request]
     (go
+      (api/trace "skip-if-configuration-has-schedule")
       (log/infof "schedule %s" (:schedule request))
-      (if (:schedule request)
-        (<! (api/finish :success "skip Pushes with schedules" :visbility :hidden))
-        (<! (handler request))))))
+      (if (nil? (:schedule request))
+        (<! (handler request))
+        (<! (api/finish request :success "skip Pushes with schedules" :visibility :hidden))))))
 
 (defn ^:export handler
   "handler
@@ -218,8 +219,8 @@
             (run-editors)
             (api/edit-inside-PR :pr-config)
             (api/clone-ref)
-            (check-config)
             (check-for-new-pull-request)
+            (check-config)
             (log-attempt)
             (api/extract-github-token)
             (skip-if-not-master)

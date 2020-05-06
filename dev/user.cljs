@@ -1,86 +1,47 @@
 (ns user
   (:require [atomist.main]
-            [atomist.cljs-log :as log]))
+            [atomist.local-runner :refer [fake-push call-event-handler fake-command-handler set-env]]))
 
 (enable-console-print!)
-
-(def token (.. js/process -env -API_KEY_SLIMSLENDERSLACKS_STAGING))
-(def github-token (.. js/process -env -GITHUB_TOKEN))
-
-(defn fake-handler [& args]
-  (log/info "args " args))
+(set-env :prod-github-auth)
 
 (comment
  ;; EVENT
  ;; - needs both API_KEY and github token in scmProvider credential
  ;; - subsequent Pushes of this should run but do nothing.  They might re-run if the config is updated, but this would be confusing
-  (.catch
-   (.then
-    (atomist.main/handler #js {:data {:Push [{:branch "master"
-                                              :repo {:name "elephants"
-                                                     :org {:owner "atomisthqa"
-                                                           :scmProvider {:providerId "zjlmxjzwhurspem"
-                                                                         :credential {:secret github-token}}}}
-                                              :after {:message ""}}]}
-                               :secrets [{:uri "atomist://api-key" :value token}]
-                               :configuration {:name "whales->elephants"
-                                               :parameters [{:name "expression" :value "s/whales/elephants/g"}
-                                                            {:name "glob-pattern" :value ["README.md"]}]}
-                               :extensions [:team_id "AK748NQC5"]}
-                          fake-handler)
-    (fn [v] (log/info "value " v)))
-   (fn [error] (log/info "error " error)))
+ (-> (fake-push "T29E48P34" "atomist" "string-replace-tests" "master")
+     (assoc :configuration {:name "Snake case to camel case for YAML"
+                            :parameters [{:name "expression" :value "s/([a-zA-Z]*?)_([a-zA-Z])/$1\\U$2/g"}
+                                         {:name "glob-pattern" :value ["*.{yml,yaml}" "**/*.html"]}]})
+     (call-event-handler atomist.main/handler))
 
- ;; what if the branch whales->elephants-on-master is changed, these should still run because it might have been rebased
-  (.catch
-   (.then
-    (atomist.main/handler #js {:data {:Push [{:branch "whales->elephants-on-master"
-                                              :repo {:name "elephants"
-                                                     :org {:owner "atomisthqa"
-                                                           :scmProvider {:providerId "zjlmxjzwhurspem"
-                                                                         :credential {:secret github-token}}}}
-                                              :after {:message "[:atomist:edited]"}}]}
-                               :secrets [{:uri "atomist://api-key" :value token}]
-                               :configuration {:name "whales->elephants"
-                                               :parameters [{:name "expression" :value "s/whales/elephants/g"}
-                                                            {:name "glob-pattern" :value ["README.md"]}]}
-                               :extensions [:team_id "AK748NQC5"]}
-                          fake-handler)
-    (fn [v] (log/info "value " v)))
-   (fn [error] (log/info "error " error)))
+ (-> (fake-push "T29E48P34" "atomist" "string-replace-tests" "master")
+     (call-event-handler atomist.main/handler))
 
- ;; COMMAND HANDLER
+ (-> (fake-push "T29E48P34" "atomist" "string-replace-tests" "master")
+     (assoc :configuration {:name "whatever"
+                            :parameters [{:name "schedule" :value {}}]})
+     (call-event-handler atomist.main/handler))
+
+ ;; STAGING what if the branch whales->elephants-on-master is changed, these should still run because it might have been rebased
+ (-> (fake-push "AK748NQC5" "atomisthqa" "elephants" "whales->elephants-on-master")
+     (assoc :configuration {:name "whales->elephants"
+                            :parameters [{:name "expression" :value "s/whales/elephants/g"}
+                                         {:name "glob-pattern" :value ["README.md"]}]})
+     (call-event-handler atomist.main/handler))
+
+ ;; STAGING COMMAND HANDLER
  ;;   - needs only API_KEY
  ;;   - extracts repo from channel
  ;;   - extracts github token from ResourceUser
-  (.catch
-   (.then
-    (atomist.main/handler #js {:command "StringReplaceSkill"
-                               :source {:slack {:channel {:id "CTGGW07B6"}
-                                                :user {:id "UDF0NFB5M"}}}
-                               :team {:id "AK748NQC5"}
-                               :configurations [{:name "elephants"
-                                                 :enabled true
-                                                 :parameters [{:name "glob-pattern" :value "README.md,**/*.html"}
-                                                              {:name "expression" :value "s/whales/elephants/g"}]}]
-                               :raw_message "sed --configuration=elephants"
-                               :secrets [{:uri "atomist://api-key" :value token}]}
-                          fake-handler)
-    (fn [v] (log/info "value " v)))
-   (fn [error] (log/error "error " error)))
+ (-> (fake-command-handler "AK748NQC5" "StringReplaceSkill" "sed --configuration=elephants" "CTGGW07B6" "UDF0NFB5M")
+     (assoc :configurations [{:name "elephants"
+                              :enabled true
+                              :parameters [{:name "glob-pattern" :value "README.md,**/*.html"}
+                                           {:name "expression" :value "s/whales/elephants/g"}]}])
+     (call-event-handler atomist.main/handler))
 
- ;; COMMAND HANDLER
+ ;; STAGING COMMAND HANDLER
  ;;
-  (.catch
-   (.then
-    (atomist.main/handler #js {:command "FindUrlSkill"
-                               :source {:slack {:channel {:id "CTGGW07B6"}
-                                                :user {:id "UDF0NFB5M"}}}
-                               :api_version "1"
-                               :correlation_id "corrid"
-                               :team {:id "AK748NQC5"}
-                               :raw_message "find-by-regex --url --glob-pattern=**/*"
-                               :secrets [{:uri "atomist://api-key" :value token}]}
-                          fake-handler)
-    (fn [v] (log/info "value " v)))
-   (fn [error] (log/error "error " error))))
+ (-> (fake-command-handler "AK748NQC5" "FindUrlSkill" "find-by-regex --url --glob-pattern=**/*" "CTGGW07B6" "UDF0NFB5M")
+     (call-event-handler)))

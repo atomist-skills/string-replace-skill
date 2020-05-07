@@ -10,3 +10,4 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 
 -   Skill acting like glob pattern is required. [#18](https://github.com/atomist-skills/string-replace-skill/issues/18)
+-   Example expression from README not producing expected results. [#39](https://github.com/atomist-skills/string-replace-skill/issues/39)

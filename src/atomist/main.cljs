@@ -65,7 +65,7 @@
           (<! (handler (assoc request
                               :editor editor
                               :pr-config {:target-branch "master"
-                                          :branch (:branch-name request)
+                                          :branch (-> request :configuration :name (config->branch-name (or (:branch request) (-> request :ref :branch))))
                                           :title (-> request :configuration :name)
                                           :body (gstring/format "Ran string replacement `%s` on %s\n[atomist:edited]"
                                                                 (:expression request)
@@ -84,11 +84,10 @@
   (fn [request]
     (go
       (api/trace "check-for-new-pull-request(enter)")
-      (let [branch (-> request :configuration :name (config->branch-name (or (:branch request) (-> request :ref :branch))))]
-        (let [response (<! (handler (assoc request :branch-name branch)))]
-          (api/trace "check-for-new-pull-request(exit)")
-          (let [pullRequest (<! (github/pr-channel request branch))]
-            (assoc response :pull-request-number (:number pullRequest))))))))
+      (let [response (<! (handler request))]
+        (api/trace "check-for-new-pull-request(exit)")
+        (let [pullRequest (<! (github/pr-channel request branch))]
+          (assoc response :pull-request-number (:number pullRequest)))))))
 
 (defn run-editors
   "middleware
@@ -187,8 +186,8 @@
             (run-editors)
             (api/edit-inside-PR :pr-config)
             (api/clone-ref)
-            (check-config)
             (check-for-new-pull-request)
+            (check-config)
             (log-attempt)
             (api/add-skill-config-by-configuration-parameter :configuration :glob-pattern :expression :scope :update)
             (api/create-ref-from-first-linked-repo)

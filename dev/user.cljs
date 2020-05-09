@@ -6,11 +6,11 @@
 (set-env :prod-github-auth)
 
 (comment
- (-> (fake-push "AEIB5886C" "slimslender" "elephants" "master")
-     (assoc :configuration {:name "String Replace"
-                            :parameters [{:name "expression" :value "s/([a-zA-Z]*?)_([a-zA-Z])/$1\\U$2/g"}
-                                         {:name "glob-pattern" :value ["*.{yml,yaml}"]}]})
-     (call-event-handler atomist.main/handler))
+  (-> (fake-push "AEIB5886C" "slimslender" "elephants" "master")
+      (assoc :configuration {:name "String Replace"
+                             :parameters [{:name "expression" :value "s/([a-zA-Z]*?)_([a-zA-Z])/$1\\U$2/g"}
+                                          {:name "glob-pattern" :value ["*.{yml,yaml}"]}]})
+      (call-event-handler atomist.main/handler))
  ;; EVENT
  ;; - needs both API_KEY and github token in scmProvider credential
  ;; - subsequent Pushes of this should run but do nothing.  They might re-run if the config is updated, but this would be confusing

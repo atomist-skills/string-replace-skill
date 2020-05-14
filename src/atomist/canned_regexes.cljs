@@ -1,11 +1,12 @@
 (ns atomist.canned-regexes
   (:require ["url-regex" :as regex]
-            [atomist.sdmprojectmodel :as sdm]
+            [atomist.gitflows :as gitflow]
             [cljs.core.async :refer [<! >! timeout chan]]
             [atomist.api :as api]
             [atomist.json :as json]
             [goog.string :as gstring]
-            [goog.string.format])
+            [goog.string.format]
+            [cljs-node-io.core :as io])
   (:require-macros [cljs.core.async.macros :refer [go]]))
 
 (def url-regex (regex))
@@ -21,11 +22,12 @@
   [handler]
   (fn [request]
     (go
-      (let [data (<! ((sdm/do-with-files
+      (let [data (<! ((gitflow/do-with-files
                        (fn [f]
                          (go
-                           {(. ^js f -realPath) (into [] (re-seq url-regex (<! (sdm/get-content f))))}))
-                       (:glob-pattern request)) (:project request)))
+                           {(.getPath f) (into [] (re-seq url-regex (io/slurp f)))}))
+                       (:glob-pattern request))
+                      (:project request)))
             file-matches (apply merge data)]
         (<! (api/simple-message request (gstring/format "found %s urls over %s files"
                                                         (reduce #(+ %1 (-> %2 vals first count)) 0 data)

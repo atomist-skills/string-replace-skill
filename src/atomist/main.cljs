@@ -6,13 +6,13 @@
             [goog.string.format]
             [atomist.cljs-log :as log]
             [atomist.editors :as editors]
-            [atomist.sdmprojectmodel :as sdm]
             [atomist.api :as api]
             [atomist.github :as github]
             [atomist.repo-filter :as repo-filter]
             [atomist.canned-regexes :as regexes]
             [atomist.sed :as sed]
-            [atomist.regex :as regex])
+            [atomist.regex :as regex]
+            [cljs-node-io.core :as io])
   (:require-macros [cljs.core.async.macros :refer [go]]))
 
 (defn compile-simple-content-editor
@@ -25,14 +25,14 @@
     (go
       (api/trace "compile-simple-content-editor")
       (try
-        (let [content (<! (sdm/get-content f))
+        (let [content (io/slurp f)
               {:keys [error new-content]} (<! ((:editor request) f content))]
           (cond
             (= content new-content)
             (log/debug "content not changed")
 
             (and new-content (not error))
-            (<! (sdm/set-content f new-content))
+            (io/spit f new-content)
 
             :else
             (log/errorf "error running stream editor: %s" error)))
@@ -86,7 +86,7 @@
       (api/trace "check-for-new-pull-request(enter)")
       (let [response (<! (handler request))]
         (api/trace "check-for-new-pull-request(exit)")
-        (let [pullRequest (<! (github/pr-channel request branch))]
+        (let [pullRequest (<! (github/pr-channel request (-> request :pr-config :branch)))]
           (assoc response :pull-request-number (:number pullRequest)))))))
 
 (defn run-editors
@@ -103,7 +103,6 @@
   [handler]
   (fn [request]
     (go
-
       (api/trace "run-editors")
       (<! ((-> (compile-simple-content-editor request)
                (editors/do-with-glob-patterns (:glob-pattern request))
@@ -231,6 +230,13 @@
 
        (contains? (:data request) :OnSchedule)
        ((-> (api/finished :message "String-Replace scheduled")
+            (api/from (fn [{:keys [plan]}]
+                        (let [details
+                              (->> plan
+                                   (map #(select-keys % [:pull-request-number :edit-result :ref]))
+                                   (into []))]
+                          (cljs.pprint/pprint details)
+                          details)) :key :batch-details)
             (api/repo-iterator (fn [request ref] (repo-filter/ref-matches-repo-filter? request ref (:scope request)))
                                (-> (api/finished)
                                    (run-editors)
@@ -244,7 +250,7 @@
                                        (let [c (->> (:plan request)
                                                     (filter :pull-request-number)
                                                     (count))]
-                                         (gstring/format "raised %d Pull Requests" c)))))
+                                         (gstring/format "%d open Pull Requests" c)))))
         (assoc request :branch "master"))
 
        :else

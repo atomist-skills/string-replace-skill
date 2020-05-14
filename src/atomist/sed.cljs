@@ -20,7 +20,7 @@
   "content - string to update"
   (if (re-find #"s/(.*)/(.*)/g?" s)
     (fn [f content]
-      (let [path (. ^js f -realPath)]
+      (let [path (.getPath f)]
         (log/debugf "spawn sed on %s for file %s" s path)
         (go
           (let [[error stdout stderr] (<! (proc/aexec (gstring/format "sed %s '%s' %s"

@@ -98,7 +98,7 @@
   (fn [f content]
     (go
       (try
-        (api/trace (gstring/format "content-editor %s" (.-path ^js f)))
+        (api/trace (gstring/format "content-editor %s" (.getPath f)))
         (if content
           (let [p (js/RegExp. search-regex (or opts ""))]
             {:new-content (.replace content p (partial replacement-substitutions replace))}))

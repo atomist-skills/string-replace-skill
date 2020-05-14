@@ -8,4 +8,5 @@
   {:target :node-library,
    :output-to "index.js",
    :exports {:handler atomist.main/handler},
+   :devtools {:enabled false}
    :compiler-options {:optimizations :advanced}}}}

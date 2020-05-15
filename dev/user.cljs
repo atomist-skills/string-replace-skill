@@ -24,12 +24,12 @@
       (call-event-handler atomist.main/handler))
 
  ;; run this multiple times to test that we handle more pushes to main afterwards
- (-> (fake-push "AEIB5886C" "slimslender" "elephants" "master")
-     (assoc :configuration {:name "Camel Case Converter"
-                            :parameters [{:name "expression" :value "s/([a-zA-Z]*?)_([a-zA-Z])/$1\\U$2/g"}
-                                         {:name "glob-pattern" :value ["*.{yml,yaml}"]}
-                                         {:name "scope" :value {:includes nil :excludes nil}}]})
-     (call-event-handler atomist.main/handler))
+  (-> (fake-push "AEIB5886C" "slimslender" "elephants" "master")
+      (assoc :configuration {:name "Camel Case Converter"
+                             :parameters [{:name "expression" :value "s/([a-zA-Z]*?)_([a-zA-Z])/$1\\U$2/g"}
+                                          {:name "glob-pattern" :value ["*.{yml,yaml}"]}
+                                          {:name "scope" :value {:includes nil :excludes nil}}]})
+      (call-event-handler atomist.main/handler))
 
  ;; EVENT
  ;; - needs both API_KEY and github token in scmProvider credential

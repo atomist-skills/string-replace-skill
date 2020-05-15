@@ -23,6 +23,7 @@
                                          {:name "update" :value "pr_default"}]})
      (call-event-handler atomist.main/handler))
 
+ ;; run this multiple times to test that we handle more pushes to main afterwards
  (-> (fake-push "AEIB5886C" "slimslender" "elephants" "master")
      (assoc :configuration {:name "Camel Case Converter"
                             :parameters [{:name "expression" :value "s/([a-zA-Z]*?)_([a-zA-Z])/$1\\U$2/g"}

@@ -1,5 +1,5 @@
 skill:
-  description: Automatically replace strings in files based on a regular expression
+  description: Make bulk updates to files across as many of your repos as you need
   category:
     - DEV_EX
   video: 'https://images.atomist.com/skills/string-replace.gif'

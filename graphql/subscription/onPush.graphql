@@ -1,44 +1,44 @@
 subscription OnAnyPush {
-    Push {
+  Push {
+    id
+    branch
+    repo {
+      channels {
+        channelId
+        name
+      }
+      branches {
         id
-        branch
-        repo {
-            channels {
-                channelId
-                name
-            }
-            branches {
-                id
-            }
-            defaultBranch
-            id
+      }
+      defaultBranch
+      id
+      name
+      org {
+        id
+        owner
+        ownerType
+        scmProvider {
+          credential {
+            secret
+          }
+          id
+          name
+          providerId
+          providerType
+          authProviderId
+        }
+        team {
+          chatTeams {
             name
-            org {
-                id
-                owner
-                ownerType
-                scmProvider {
-                    credential {
-                        secret
-                    }
-                    id
-                    name
-                    providerId
-                    providerType
-                    authProviderId
-                }
-                team {
-                    chatTeams {
-                        name
-                        id
-                    }
-                }
-            }
-        }
-        after {
             id
-            sha
-            message
+          }
         }
+      }
     }
+    after {
+      id
+      sha
+      message
+    }
+  }
 }

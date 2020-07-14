@@ -1,6 +1,6 @@
 subscription OnSchedule {
-    OnSchedule {
-        configurationName
-        parameterName
-    }
+  OnSchedule {
+    configurationName
+    parameterName
+  }
 }

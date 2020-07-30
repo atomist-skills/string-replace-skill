@@ -21,7 +21,6 @@
  :name "string-replace-skill",
  :long_description
  "Automatically replace strings in files based on a regular expression.\n- Update configuration, code, documentation or any file in your codebase\n- Rename packages across an entire codebase\n- Update information needing periodic revision like dates, licenses, comment blocks\n",
- :icon "https://images.atomist.com/rug/regex.png",
  :title "String Replace",
  :author "Atomist",
  :dispatch "multiple",
@@ -33,7 +32,7 @@
    :description "Find all urls in the codebase",
    :pattern "^find-by-regex .*$"}],
  :iconUrl
- "https://raw.githubusercontent.com/cljs/logo/master/cljs.png",
+ "https://images.atomist.com/rug/regex.png",
  :runtime
  {:name "nodejs10",
   :entry_point "eventhandler",

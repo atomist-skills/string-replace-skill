@@ -11,12 +11,12 @@
     "atm:lint:prettier": "prettier --write"
   },
   "dependencies": {
-    "@atomist/api-cljs": "^0.4.54",
+    "@atomist/api-cljs": "^0.4.111",
     "@atomist/skill-logging": "^0.2.6",
     "@google-cloud/pubsub": "^2.5.0",
     "@google-cloud/storage": "^5.3.0",
     "copyright-regex": "^1.1.6",
-    "fast-glob": "^3.2.2",
+    "fast-glob": "^3.2.4",
     "filename-regex": "^2.0.1",
     "iconv-lite": "^0.4.19",
     "mentions-regex": "^2.0.3",
@@ -27,13 +27,13 @@
     "url-regex": "^5.0.0"
   },
   "devDependencies": {
-    "@atomist/skill-bundler": "^0.1.13",
-    "husky": "^4.2.5",
-    "lint-staged": "^10.2.11",
-    "prettier": "^2.0.5",
-    "shadow-cljs": "^2.8.69",
+    "@atomist/skill-bundler": "^0.1.26",
+    "husky": "^4.3.0",
+    "lint-staged": "^10.4.0",
+    "prettier": "^2.1.2",
+    "shadow-cljs": "^2.11.5",
     "source-map-support": "0.5.9",
-    "ws": "^7.3.0"
+    "ws": "^7.3.1"
   },
   "main": "node_modules/@atomist/api-cljs/app.js",
   "husky": {

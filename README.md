@@ -101,10 +101,8 @@ directly from Slack.
 
     Combining capture groups and back references in your substitution expression
     can be surprisingly powerful.  
-    A YAML [snake case](https://en.wikipedia.org/wiki/Snake_case) to
-    [camel case](https://en.wikipedia.org/wiki/Camel_case) converter like this
-    could be applied to all files matching the
-    [glob patterns](<https://en.wikipedia.org/wiki/Glob_(programming)>)
+     A YAML [snake case](https://en.wikipedia.org/wiki/Snake_case) to [camel case](https://en.wikipedia.org/wiki/Camel_case)
+    converter like this could be applied to all files matching the [glob patterns](<https://en.wikipedia.org/wiki/Glob_(programming)>)
     `*.yaml,*.yml`
 
     `s/([a-zA-Z]*?)_([a-zA-Z])/$1\U$2/g`

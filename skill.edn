@@ -14,7 +14,7 @@
 
 {:description
  "Make bulk updates to files across as many of your repos as you need",
- :categories ["PROJECT_MANAGEMENT"],
+ :categories ["REPO_MANAGEMENT"],
  :video "https://images.atomist.com/skills/string-replace.gif",
  :package {:use "atomist/package-cljs-skill"},
  :repository "https://github.com/atomist-skills/string-replace-skill",

@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased](https://github.com/atomist-skills/string-replace-skill/compare/0.3.5...HEAD)
 
+### Changed
+
+-   Update skill categories. [dac82b9](https://github.com/atomist-skills/string-replace-skill/commit/dac82b95703a1fe49503c0311e4c5e276f490d2d)
+
 ## [0.3.5](https://github.com/atomist-skills/string-replace-skill/compare/0.3.4...0.3.5) - 2020-07-30
 
 ## [0.3.4](https://github.com/atomist-skills/string-replace-skill/compare/0.3.3...0.3.4) - 2020-07-29

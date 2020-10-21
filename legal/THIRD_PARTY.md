@@ -8,14 +8,14 @@ This page details all runtime dependencies of `string-replace-skill`.
 
 | License                       | Count |
 | ----------------------------- | ----- |
-| [Apache-2.0](#apache-20)      | 46    |
+| [Apache-2.0](#apache-20)      | 47    |
 | [Apache](#apache)             | 1     |
 | [BSD-2-Clause](#bsd-2-clause) | 6     |
 | [BSD-3-Clause](#bsd-3-clause) | 16    |
 | [CC0-1.0](#cc0-10)            | 2     |
 | [GPL-2.0](#gpl-20)            | 2     |
 | [ISC](#isc)                   | 28    |
-| [MIT](#mit)                   | 158   |
+| [MIT](#mit)                   | 156   |
 | [UNKNOWN](#unknown)           | 1     |
 
 #### Apache
@@ -45,7 +45,7 @@ Apache License 2.0 - [http://www.apache.org/licenses/LICENSE-2.0](http://www.apa
 | `@google-cloud/promisify`             | `1.0.4`                       | Google Inc.           | [https://github.com/googleapis/nodejs-promisify](https://github.com/googleapis/nodejs-promisify)                                 |
 | `@google-cloud/promisify`             | `2.0.3`                       | Google Inc.           | [https://github.com/googleapis/nodejs-promisify](https://github.com/googleapis/nodejs-promisify)                                 |
 | `@google-cloud/pubsub`                | `1.7.3`                       | Google Inc.           | [https://github.com/googleapis/nodejs-pubsub](https://github.com/googleapis/nodejs-pubsub)                                       |
-| `@google-cloud/pubsub`                | `2.5.0`                       | Google Inc.           | [https://github.com/googleapis/nodejs-pubsub](https://github.com/googleapis/nodejs-pubsub)                                       |
+| `@google-cloud/pubsub`                | `2.6.0`                       | Google Inc.           | [https://github.com/googleapis/nodejs-pubsub](https://github.com/googleapis/nodejs-pubsub)                                       |
 | `@google-cloud/storage`               | `4.7.0`                       | Google Inc.           | [https://github.com/googleapis/nodejs-storage](https://github.com/googleapis/nodejs-storage)                                     |
 | `@google-cloud/storage`               | `5.3.0`                       | Google Inc.           | [https://github.com/googleapis/nodejs-storage](https://github.com/googleapis/nodejs-storage)                                     |
 | `@grpc/grpc-js`                       | `1.0.5`                       | Google Inc.           | [https://github.com/grpc/grpc-node/tree/master/packages/grpc-js](https://github.com/grpc/grpc-node/tree/master/packages/grpc-js) |
@@ -56,20 +56,21 @@ Apache License 2.0 - [http://www.apache.org/licenses/LICENSE-2.0](http://www.apa
 | `@opencensus/core`                    | `0.0.22`                      | Google Inc.           | [https://github.com/census-instrumentation/opencensus-node](https://github.com/census-instrumentation/opencensus-node)           |
 | `@opencensus/propagation-stackdriver` | `0.0.20`                      | OpenCensus Authors    | [https://github.com/census-instrumentation/opencensus-node](https://github.com/census-instrumentation/opencensus-node)           |
 | `@opencensus/propagation-stackdriver` | `0.0.22`                      | OpenCensus Authors    | [https://github.com/census-instrumentation/opencensus-node](https://github.com/census-instrumentation/opencensus-node)           |
-| `@opentelemetry/api`                  | `0.10.2`                      | OpenTelemetry Authors | [https://github.com/open-telemetry/opentelemetry-js](https://github.com/open-telemetry/opentelemetry-js)                         |
-| `@opentelemetry/context-base`         | `0.10.2`                      | OpenTelemetry Authors | [https://github.com/open-telemetry/opentelemetry-js](https://github.com/open-telemetry/opentelemetry-js)                         |
-| `@opentelemetry/core`                 | `0.10.2`                      | OpenTelemetry Authors | [https://github.com/open-telemetry/opentelemetry-js](https://github.com/open-telemetry/opentelemetry-js)                         |
-| `@opentelemetry/resources`            | `0.10.2`                      | OpenTelemetry Authors | [https://github.com/open-telemetry/opentelemetry-js](https://github.com/open-telemetry/opentelemetry-js)                         |
-| `@opentelemetry/tracing`              | `0.10.2`                      | OpenTelemetry Authors | [https://github.com/open-telemetry/opentelemetry-js](https://github.com/open-telemetry/opentelemetry-js)                         |
+| `@opentelemetry/api`                  | `0.11.0`                      | OpenTelemetry Authors | [https://github.com/open-telemetry/opentelemetry-js](https://github.com/open-telemetry/opentelemetry-js)                         |
+| `@opentelemetry/context-base`         | `0.11.0`                      | OpenTelemetry Authors | [https://github.com/open-telemetry/opentelemetry-js](https://github.com/open-telemetry/opentelemetry-js)                         |
+| `@opentelemetry/core`                 | `0.11.0`                      | OpenTelemetry Authors | [https://github.com/open-telemetry/opentelemetry-js](https://github.com/open-telemetry/opentelemetry-js)                         |
+| `@opentelemetry/resources`            | `0.11.0`                      | OpenTelemetry Authors | [https://github.com/open-telemetry/opentelemetry-js](https://github.com/open-telemetry/opentelemetry-js)                         |
+| `@opentelemetry/semantic-conventions` | `0.11.0`                      | OpenTelemetry Authors | [https://github.com/open-telemetry/opentelemetry-js](https://github.com/open-telemetry/opentelemetry-js)                         |
+| `@opentelemetry/tracing`              | `0.11.0`                      | OpenTelemetry Authors | [https://github.com/open-telemetry/opentelemetry-js](https://github.com/open-telemetry/opentelemetry-js)                         |
 | `ecdsa-sig-formatter`                 | `1.0.11`                      | D2L Corporation       | [https://github.com/Brightspace/node-ecdsa-sig-formatter](https://github.com/Brightspace/node-ecdsa-sig-formatter)               |
 | `eventid`                             | `1.0.0`                       | Google Inc.           | [https://github.com/google/eventid-js](https://github.com/google/eventid-js)                                                     |
-| `gaxios`                              | `2.2.2`                       | Google, LLC           | [https://github.com/JustinBeckwith/gaxios](https://github.com/JustinBeckwith/gaxios)                                             |
 | `gaxios`                              | `2.3.4`                       | Google, LLC           | [https://github.com/googleapis/gaxios](https://github.com/googleapis/gaxios)                                                     |
 | `gaxios`                              | `3.2.0`                       | Google, LLC           | [https://github.com/googleapis/gaxios](https://github.com/googleapis/gaxios)                                                     |
 | `gcp-metadata`                        | `3.5.0`                       | Stephen Sawchuk       | [https://github.com/googleapis/gcp-metadata](https://github.com/googleapis/gcp-metadata)                                         |
 | `gcp-metadata`                        | `4.2.0`                       | Stephen Sawchuk       | [https://github.com/googleapis/gcp-metadata](https://github.com/googleapis/gcp-metadata)                                         |
 | `google-auth-library`                 | `5.10.1`                      | Google Inc.           | [https://github.com/googleapis/google-auth-library-nodejs](https://github.com/googleapis/google-auth-library-nodejs)             |
 | `google-auth-library`                 | `6.1.1`                       | Google Inc.           | [https://github.com/googleapis/google-auth-library-nodejs](https://github.com/googleapis/google-auth-library-nodejs)             |
+| `google-auth-library`                 | `6.1.2`                       | Google Inc.           | [https://github.com/googleapis/google-auth-library-nodejs](https://github.com/googleapis/google-auth-library-nodejs)             |
 | `google-gax`                          | `1.15.3`                      | Google API Authors    | [https://github.com/googleapis/gax-nodejs](https://github.com/googleapis/gax-nodejs)                                             |
 | `google-gax`                          | `2.9.0`                       | Google API Authors    | [https://github.com/googleapis/gax-nodejs](https://github.com/googleapis/gax-nodejs)                                             |
 | `hex2dec`                             | `1.1.2`                       |                       | [https://github.com/donmccurdy/hex2dec](https://github.com/donmccurdy/hex2dec)                                                   |
@@ -182,11 +183,11 @@ MIT License - [https://opensource.org/licenses/MIT](https://opensource.org/licen
 | `@types/long`             | `4.0.0`    |                       | [https://github.com/DefinitelyTyped/DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped)                                       |
 | `@types/long`             | `4.0.1`    |                       | [https://github.com/DefinitelyTyped/DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped)                                       |
 | `@types/node`             | `10.17.13` |                       | [https://github.com/DefinitelyTyped/DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped)                                       |
-| `@types/node`             | `12.12.25` |                       | [https://github.com/DefinitelyTyped/DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped)                                       |
 | `@types/node`             | `12.12.67` |                       | [https://github.com/DefinitelyTyped/DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped)                                       |
-| `@types/node`             | `13.13.25` |                       | [https://github.com/DefinitelyTyped/DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped)                                       |
+| `@types/node`             | `12.19.0`  |                       | [https://github.com/DefinitelyTyped/DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped)                                       |
+| `@types/node`             | `13.13.28` |                       | [https://github.com/DefinitelyTyped/DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped)                                       |
+| `@types/node`             | `14.14.2`  |                       | [https://github.com/DefinitelyTyped/DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped)                                       |
 | `abort-controller`        | `3.0.0`    | Toru Nagashima        | [https://github.com/mysticatea/abort-controller](https://github.com/mysticatea/abort-controller)                                               |
-| `agent-base`              | `5.1.1`    | Nathan Rajlich        | [https://github.com/TooTallNate/node-agent-base](https://github.com/TooTallNate/node-agent-base)                                               |
 | `agent-base`              | `6.0.1`    | Nathan Rajlich        | [https://github.com/TooTallNate/node-agent-base](https://github.com/TooTallNate/node-agent-base)                                               |
 | `ansi-regex`              | `5.0.0`    | Sindre Sorhus         | [https://github.com/chalk/ansi-regex](https://github.com/chalk/ansi-regex)                                                                     |
 | `ansi-styles`             | `4.2.1`    | Sindre Sorhus         | [https://github.com/chalk/ansi-styles](https://github.com/chalk/ansi-styles)                                                                   |
@@ -195,7 +196,6 @@ MIT License - [https://opensource.org/licenses/MIT](https://opensource.org/licen
 | `async-each`              | `1.0.3`    | Paul Miller           | [https://github.com/paulmillr/async-each](https://github.com/paulmillr/async-each)                                                             |
 | `balanced-match`          | `1.0.0`    | Julian Gruber         | [https://github.com/juliangruber/balanced-match](https://github.com/juliangruber/balanced-match)                                               |
 | `base64-js`               | `1.3.1`    | T. Jameson Little     | [https://github.com/beatgammit/base64-js](https://github.com/beatgammit/base64-js)                                                             |
-| `bignumber.js`            | `7.2.1`    | Michael Mclaughlin    | [https://github.com/MikeMcl/bignumber.js](https://github.com/MikeMcl/bignumber.js)                                                             |
 | `bignumber.js`            | `9.0.1`    | Michael Mclaughlin    | [https://github.com/MikeMcl/bignumber.js](https://github.com/MikeMcl/bignumber.js)                                                             |
 | `brace-expansion`         | `1.1.11`   | Julian Gruber         | [https://github.com/juliangruber/brace-expansion](https://github.com/juliangruber/brace-expansion)                                             |
 | `braces`                  | `3.0.2`    | Jon Schlinkert        | [https://github.com/micromatch/braces](https://github.com/micromatch/braces)                                                                   |
@@ -235,7 +235,6 @@ MIT License - [https://opensource.org/licenses/MIT](https://opensource.org/licen
 | `gtoken`                  | `5.0.4`    | Google, LLC           | [https://github.com/google/node-gtoken](https://github.com/google/node-gtoken)                                                                 |
 | `hash-stream-validation`  | `0.2.4`    | Stephen Sawchuk       | [https://github.com/stephenplusplus/hash-stream-validation](https://github.com/stephenplusplus/hash-stream-validation)                         |
 | `http-proxy-agent`        | `4.0.1`    | Nathan Rajlich        | [https://github.com/TooTallNate/node-http-proxy-agent](https://github.com/TooTallNate/node-http-proxy-agent)                                   |
-| `https-proxy-agent`       | `4.0.0`    | Nathan Rajlich        | [https://github.com/TooTallNate/node-https-proxy-agent](https://github.com/TooTallNate/node-https-proxy-agent)                                 |
 | `https-proxy-agent`       | `5.0.0`    | Nathan Rajlich        | [https://github.com/TooTallNate/node-https-proxy-agent](https://github.com/TooTallNate/node-https-proxy-agent)                                 |
 | `iconv-lite`              | `0.4.24`   | Alexander Shtuchkin   | [https://github.com/ashtuchkin/iconv-lite](https://github.com/ashtuchkin/iconv-lite)                                                           |
 | `imurmurhash`             | `0.1.4`    | Jens Taylor           | [https://github.com/jensyt/imurmurhash-js](https://github.com/jensyt/imurmurhash-js)                                                           |
@@ -251,7 +250,7 @@ MIT License - [https://opensource.org/licenses/MIT](https://opensource.org/licen
 | `is`                      | `3.3.0`    | Enrico Marino         | [https://github.com/enricomarino/is](https://github.com/enricomarino/is)                                                                       |
 | `isarray`                 | `1.0.0`    | Julian Gruber         | [https://github.com/juliangruber/isarray](https://github.com/juliangruber/isarray)                                                             |
 | `js-yaml`                 | `3.14.0`   | Vladimir Zapparov     | [https://github.com/nodeca/js-yaml](https://github.com/nodeca/js-yaml)                                                                         |
-| `json-bigint`             | `0.3.0`    | Andrey Sidorov        | [https://github.com/sidorares/json-bigint](https://github.com/sidorares/json-bigint)                                                           |
+| `json-bigint`             | `0.3.1`    | Andrey Sidorov        | [https://github.com/sidorares/json-bigint](https://github.com/sidorares/json-bigint)                                                           |
 | `json-bigint`             | `1.0.0`    | Andrey Sidorov        | [https://github.com/sidorares/json-bigint](https://github.com/sidorares/json-bigint)                                                           |
 | `jwa`                     | `2.0.0`    | Brian J. Brennan      | [https://github.com/brianloveswords/node-jwa](https://github.com/brianloveswords/node-jwa)                                                     |
 | `jws`                     | `4.0.0`    | Brian J Brennan       | [https://github.com/brianloveswords/node-jws](https://github.com/brianloveswords/node-jws)                                                     |
@@ -335,7 +334,7 @@ MIT License - [https://opensource.org/licenses/MIT](https://opensource.org/licen
 
 | Name                | Version   | Publisher       | Repository |
 | ------------------- | --------- | --------------- | ---------- |
-| `@atomist/api-cljs` | `0.4.111` | jim@atomist.com |            |
+| `@atomist/api-cljs` | `0.4.112` | jim@atomist.com |            |
 
 ## Contact
 

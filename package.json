@@ -9,10 +9,10 @@
     "ws": "^7.3.1"
   },
   "dependencies": {
-    "@atomist/api-cljs": "^0.4.118",
+    "@atomist/api-cljs": "^0.4.119",
     "@atomist/skill-logging": "^0.2.6",
     "@google-cloud/pubsub": "^2.6.0",
-    "@google-cloud/storage": "^5.3.0",
+    "@google-cloud/storage": "^5.4.0",
     "copyright-regex": "^1.1.6",
     "fast-glob": "^3.2.4",
     "filename-regex": "^2.0.1",

@@ -9,7 +9,7 @@
     "ws": "^7.4.0"
   },
   "dependencies": {
-    "@atomist/api-cljs": "^0.4.120",
+    "@atomist/api-cljs": "^0.4.121",
     "@atomist/skill-logging": "^0.2.6",
     "@google-cloud/pubsub": "^2.6.0",
     "@google-cloud/storage": "^5.5.0",

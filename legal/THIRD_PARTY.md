@@ -8,14 +8,14 @@ This page details all runtime dependencies of `string-replace-skill`.
 
 | License                       | Count |
 | ----------------------------- | ----- |
-| [Apache-2.0](#apache-20)      | 33    |
+| [Apache-2.0](#apache-20)      | 34    |
 | [Apache](#apache)             | 1     |
 | [BSD-2-Clause](#bsd-2-clause) | 6     |
 | [BSD-3-Clause](#bsd-3-clause) | 15    |
 | [CC0-1.0](#cc0-10)            | 1     |
 | [GPL-2.0](#gpl-20)            | 1     |
 | [ISC](#isc)                   | 26    |
-| [MIT](#mit)                   | 142   |
+| [MIT](#mit)                   | 143   |
 | [UNKNOWN](#unknown)           | 1     |
 
 #### Apache
@@ -32,13 +32,14 @@ Apache License 2.0 - [http://www.apache.org/licenses/LICENSE-2.0](http://www.apa
 | ------------------------------------- | ------------ | --------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
 | `@atomist/skill-logging`              | `0.2.6`      | Atomist               | [https://github.com/atomist-skills/skill-logging](https://github.com/atomist-skills/skill-logging)                               |
 | `@google-cloud/common`                | `3.4.1`      | Google Inc.           | [https://github.com/googleapis/nodejs-common](https://github.com/googleapis/nodejs-common)                                       |
+| `@google-cloud/common`                | `3.5.0`      | Google Inc.           | [https://github.com/googleapis/nodejs-common](https://github.com/googleapis/nodejs-common)                                       |
 | `@google-cloud/logging`               | `8.0.8`      | Google Inc.           | [https://github.com/googleapis/nodejs-logging](https://github.com/googleapis/nodejs-logging)                                     |
 | `@google-cloud/paginator`             | `3.0.5`      | Google Inc.           | [https://github.com/googleapis/nodejs-paginator](https://github.com/googleapis/nodejs-paginator)                                 |
 | `@google-cloud/precise-date`          | `2.0.3`      | Google Inc.           | [https://github.com/googleapis/nodejs-precise-date](https://github.com/googleapis/nodejs-precise-date)                           |
 | `@google-cloud/projectify`            | `2.0.1`      | Google Inc.           | [https://github.com/googleapis/nodejs-projectify](https://github.com/googleapis/nodejs-projectify)                               |
 | `@google-cloud/promisify`             | `2.0.3`      | Google Inc.           | [https://github.com/googleapis/nodejs-promisify](https://github.com/googleapis/nodejs-promisify)                                 |
 | `@google-cloud/pubsub`                | `2.6.0`      | Google Inc.           | [https://github.com/googleapis/nodejs-pubsub](https://github.com/googleapis/nodejs-pubsub)                                       |
-| `@google-cloud/storage`               | `5.5.0`      | Google Inc.           | [https://github.com/googleapis/nodejs-storage](https://github.com/googleapis/nodejs-storage)                                     |
+| `@google-cloud/storage`               | `5.6.0`      | Google Inc.           | [https://github.com/googleapis/nodejs-storage](https://github.com/googleapis/nodejs-storage)                                     |
 | `@grpc/grpc-js`                       | `1.1.7`      | Google Inc.           | [https://github.com/grpc/grpc-node/tree/master/packages/grpc-js](https://github.com/grpc/grpc-node/tree/master/packages/grpc-js) |
 | `@grpc/proto-loader`                  | `0.5.3`      | Google Inc.           | [https://github.com/grpc/grpc-node](https://github.com/grpc/grpc-node)                                                           |
 | `@grpc/proto-loader`                  | `0.6.0-pre9` | Google Inc.           | [https://github.com/grpc/grpc-node](https://github.com/grpc/grpc-node)                                                           |
@@ -206,7 +207,7 @@ MIT License - [https://opensource.org/licenses/MIT](https://opensource.org/licen
 | `get-stream`              | `6.0.0`    | Sindre Sorhus         | [https://github.com/sindresorhus/get-stream](https://github.com/sindresorhus/get-stream)                                                       |
 | `google-p12-pem`          | `3.0.3`    | Ryan Seys             | [https://github.com/google/google-p12-pem](https://github.com/google/google-p12-pem)                                                           |
 | `gtoken`                  | `5.0.4`    | Google, LLC           | [https://github.com/google/node-gtoken](https://github.com/google/node-gtoken)                                                                 |
-| `gtoken`                  | `5.0.5`    | Google, LLC           | [https://github.com/google/node-gtoken](https://github.com/google/node-gtoken)                                                                 |
+| `gtoken`                  | `5.1.0`    | Google, LLC           | [https://github.com/google/node-gtoken](https://github.com/google/node-gtoken)                                                                 |
 | `hash-stream-validation`  | `0.2.4`    | Stephen Sawchuk       | [https://github.com/stephenplusplus/hash-stream-validation](https://github.com/stephenplusplus/hash-stream-validation)                         |
 | `http-proxy-agent`        | `4.0.1`    | Nathan Rajlich        | [https://github.com/TooTallNate/node-http-proxy-agent](https://github.com/TooTallNate/node-http-proxy-agent)                                   |
 | `https-proxy-agent`       | `5.0.0`    | Nathan Rajlich        | [https://github.com/TooTallNate/node-https-proxy-agent](https://github.com/TooTallNate/node-https-proxy-agent)                                 |
@@ -246,7 +247,7 @@ MIT License - [https://opensource.org/licenses/MIT](https://opensource.org/licen
 | `onetime`                 | `5.1.0`    | Sindre Sorhus         | [https://github.com/sindresorhus/onetime](https://github.com/sindresorhus/onetime)                                                             |
 | `p-defer`                 | `3.0.0`    | Sindre Sorhus         | [https://github.com/sindresorhus/p-defer](https://github.com/sindresorhus/p-defer)                                                             |
 | `p-limit`                 | `2.2.2`    | Sindre Sorhus         | [https://github.com/sindresorhus/p-limit](https://github.com/sindresorhus/p-limit)                                                             |
-| `p-limit`                 | `3.0.2`    | Sindre Sorhus         | [https://github.com/sindresorhus/p-limit](https://github.com/sindresorhus/p-limit)                                                             |
+| `p-limit`                 | `3.1.0`    | Sindre Sorhus         | [https://github.com/sindresorhus/p-limit](https://github.com/sindresorhus/p-limit)                                                             |
 | `p-locate`                | `4.1.0`    | Sindre Sorhus         | [https://github.com/sindresorhus/p-locate](https://github.com/sindresorhus/p-locate)                                                           |
 | `p-try`                   | `2.2.0`    | Sindre Sorhus         | [https://github.com/sindresorhus/p-try](https://github.com/sindresorhus/p-try)                                                                 |
 | `path-exists`             | `4.0.0`    | Sindre Sorhus         | [https://github.com/sindresorhus/path-exists](https://github.com/sindresorhus/path-exists)                                                     |
@@ -296,6 +297,7 @@ MIT License - [https://opensource.org/licenses/MIT](https://opensource.org/licen
 | `wrap-ansi`               | `6.2.0`    | Sindre Sorhus         | [https://github.com/chalk/wrap-ansi](https://github.com/chalk/wrap-ansi)                                                                       |
 | `xdg-basedir`             | `4.0.0`    | Sindre Sorhus         | [https://github.com/sindresorhus/xdg-basedir](https://github.com/sindresorhus/xdg-basedir)                                                     |
 | `yargs`                   | `15.4.1`   |                       | [https://github.com/yargs/yargs](https://github.com/yargs/yargs)                                                                               |
+| `yocto-queue`             | `0.1.0`    | Sindre Sorhus         | [https://github.com/sindresorhus/yocto-queue](https://github.com/sindresorhus/yocto-queue)                                                     |
 
 #### UNKNOWN
 

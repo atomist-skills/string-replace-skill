@@ -273,4 +273,4 @@
        :else
        (go
          (log/errorf "Unrecognized event %s" request)
-         (api/finish request))))))
+         (<! (api/finish request)))))))

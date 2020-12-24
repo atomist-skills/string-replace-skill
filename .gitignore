@@ -9,3 +9,4 @@ index.js
 **/.DS_Store*
 .clj-kondo
 .lsp
+/.atomist/

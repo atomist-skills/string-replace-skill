@@ -30,6 +30,7 @@
  "Automatically replace strings in files based on a regular expression.\n- Update configuration, code, documentation or any file in your codebase\n- Rename packages across an entire codebase\n- Update information needing periodic revision like dates, licenses, comment blocks\n",
  :title "String Replace",
  :author "Atomist",
+ :triggers ["OnAnyPush" "OnSchedule"]
  :commands
  [{:name "StringReplaceSkill",
    :description "Invoke the StringReplaceSkill on a linked repository",

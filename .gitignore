@@ -7,3 +7,5 @@ node_modules/
 classes/
 index.js
 **/.DS_Store*
+.clj-kondo
+.lsp

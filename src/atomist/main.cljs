@@ -234,11 +234,14 @@
             (api/create-ref-from-push-event)
             (add-default-glob-pattern)
             (skip-if-configuration-has-schedule)
-            (api/add-skill-config :glob-pattern :expression :schedule :scope :parserType :update)
+            (api/add-skill-config)
             (api/skip-push-if-atomist-edited)
+            (api/log-event)
             (api/status :send-status (fn [request]
                                        (if (:pull-request-number request)
-                                         (gstring/format "**StringReplaceSkill** handled Push Event:  [PR raised](%s)" (pr-link request))
+                                         (gstring/format 
+                                           "**StringReplaceSkill** handled Push Event:  [PR raised](%s)" 
+                                           (pr-link request))
                                          "Push event handler completed without raising PullRequest"))))
         request)
 

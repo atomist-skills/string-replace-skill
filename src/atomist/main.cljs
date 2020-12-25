@@ -163,6 +163,91 @@
         (<! (handler request))
         (<! (api/finish request :success "skip Pushes with schedules" :visibility :hidden))))))
 
+(def find-url-handler
+  (-> (api/finished :message "successfully ran FindUrlSkill")
+      (regexes/run-regular-expressions)
+      (api/clone-ref)
+      (api/create-ref-from-first-linked-repo)
+      (api/extract-linked-repos)
+      (api/extract-github-user-token)
+      (api/from (fn [request] (log/info "globs " (:glob-pattern request)) :a) :key :whatever)
+      (api/from (fn [request] (conj [] (:glob-pattern request))) :key :glob-pattern)
+      (api/extract-cli-parameters [[nil "--url" nil]
+                                   [nil "--glob-pattern PATTERN" "glob pattern"]])
+      (api/set-message-id)
+      (api/status)))
+
+(def string-replace-skill
+  (-> (api/finished :message "CommandHandler"
+                    :send-status send-status)
+      (run-editors)
+      (api/edit-inside-PR :pr-config)
+      (api/clone-ref)
+      (check-for-new-pull-request)
+      (check-config)
+      (log-attempt)
+      (api/add-skill-config-by-configuration-parameter :configuration :glob-pattern :expression :scope :update)
+      (api/create-ref-from-first-linked-repo)
+      (api/extract-linked-repos)
+      (api/extract-github-user-token)
+      (api/check-required-parameters {:name "configuration"
+                                      :required true
+                                      :pattern ".*"
+                                      :validInput "must be a valid configuration name"})
+      (api/extract-cli-parameters [[nil "--configuration PATTERN" "existing configuration"]
+                                   [nil "--commit-on-master"]])
+      (api/set-message-id)
+      (api/status :send-status (fn [request]
+                                 (if (:pull-request-number request)
+                                   (gstring/format "**StringReplaceSkill** CommandHandler completed successfully:  [PR raised](%s)" (pr-link request))
+                                   "CommandHandler completed without raising PullRequest")))))
+
+(def on-push
+  (-> (api/finished :message "Push event"
+                    :send-status send-status)
+      (run-editors)
+      (api/edit-inside-PR :pr-config)
+      (api/clone-ref)
+      (check-for-new-pull-request)
+      (check-config)
+      (log-attempt)
+      (api/extract-github-token)
+      (skip-if-not-master)
+      (api/create-ref-from-push-event)
+      (add-default-glob-pattern)
+      (skip-if-configuration-has-schedule)
+      (api/add-skill-config)
+      (api/skip-push-if-atomist-edited)
+      (api/status :send-status (fn [request]
+                                 (if (:pull-request-number request)
+                                   (gstring/format
+                                    "**StringReplaceSkill** handled Push Event:  [PR raised](%s)"
+                                    (pr-link request))
+                                   "Push event handler completed without raising PullRequest")))))
+
+(def on-schedule
+  (-> (api/finished :message "String-Replace scheduled")
+      (api/from (fn [{:keys [plan]}]
+                  (let [details
+                        (->> plan
+                             (map #(select-keys % [:pull-request-number :edit-result :ref]))
+                             (into []))]
+                    (cljs.pprint/pprint details)
+                    details)) :key :batch-details)
+      (api/repo-iterator (fn [request ref] (repo-filter/ref-matches-repo-filter? request ref (:scope request)))
+                         (-> (api/finished)
+                             (run-editors)
+                             (api/edit-inside-PR :pr-config)
+                             (api/clone-ref)
+                             (check-for-new-pull-request)))
+      (check-config)
+      (add-default-glob-pattern)
+      (api/add-skill-config)
+      (api/status :send-status (fn [request]
+                                 (let [c (->> (:plan request)
+                                              (filter :pull-request-number)
+                                              (count))]
+                                   (gstring/format "%d open Pull Requests" c))))))
 (defn ^:export handler
   "handler
     must return a Promise - we don't do anything with the value
@@ -170,107 +255,21 @@
       data - Incoming Request #js object
       sendreponse - callback ([obj]) puts an outgoing message on the response topic"
   [data sendreponse]
+  (println "start handler")
   (api/make-request
    data
    sendreponse
    (fn [request]
-     (cond
+     (println "hey")
+     (println request)
+     (log/info request)
+     ((-> #(go %)
+          (api/mw-dispatch {:FindUrlSkill find-url-handler
+                            :StringReplaceSkill string-replace-skill
+                            :OnAnyPush on-push
+                            :OnSchedule on-schedule
+                            :default #(go
+                                        (log/errorf "Unrecognized event %s" %)
+                                        (<! (api/finish %)))})
+          (api/log-event)) request))))
 
-       ;; Invoked by Command Handler (report on certain regexes in the codebase)
-       (= "FindUrlSkill" (:command request))
-       ((-> (api/finished :message "successfully ran FindUrlSkill")
-            (regexes/run-regular-expressions)
-            (api/clone-ref)
-            (api/create-ref-from-first-linked-repo)
-            (api/extract-linked-repos)
-            (api/extract-github-user-token)
-            (api/from (fn [request] (log/info "globs " (:glob-pattern request)) :a) :key :whatever)
-            (api/from (fn [request] (conj [] (:glob-pattern request))) :key :glob-pattern)
-            (api/extract-cli-parameters [[nil "--url" nil]
-                                         [nil "--glob-pattern PATTERN" "glob pattern"]])
-            (api/set-message-id)
-            (api/status))
-        (assoc request :branch "master"))
-
-       ;; Invoked by Command Handler (test out the regex from slack)
-       (= "StringReplaceSkill" (:command request))
-       ((-> (api/finished :message "CommandHandler"
-                          :send-status send-status)
-            (run-editors)
-            (api/edit-inside-PR :pr-config)
-            (api/clone-ref)
-            (check-for-new-pull-request)
-            (check-config)
-            (log-attempt)
-            (api/add-skill-config-by-configuration-parameter :configuration :glob-pattern :expression :scope :update)
-            (api/create-ref-from-first-linked-repo)
-            (api/extract-linked-repos)
-            (api/extract-github-user-token)
-            (api/check-required-parameters {:name "configuration"
-                                            :required true
-                                            :pattern ".*"
-                                            :validInput "must be a valid configuration name"})
-            (api/extract-cli-parameters [[nil "--configuration PATTERN" "existing configuration"]
-                                         [nil "--commit-on-master"]])
-            (api/set-message-id)
-            (api/status :send-status (fn [request]
-                                       (if (:pull-request-number request)
-                                         (gstring/format "**StringReplaceSkill** CommandHandler completed successfully:  [PR raised](%s)" (pr-link request))
-                                         "CommandHandler completed without raising PullRequest"))))
-        (assoc request :branch "master"))
-
-       ;; Push Event (try out config parameters)
-       (contains? (:data request) :Push)
-       ((-> (api/finished :message "Push event"
-                          :send-status send-status)
-            (run-editors)
-            (api/edit-inside-PR :pr-config)
-            (api/clone-ref)
-            (check-for-new-pull-request)
-            (check-config)
-            (log-attempt)
-            (api/extract-github-token)
-            (skip-if-not-master)
-            (api/create-ref-from-push-event)
-            (add-default-glob-pattern)
-            (skip-if-configuration-has-schedule)
-            (api/add-skill-config)
-            (api/skip-push-if-atomist-edited)
-            (api/log-event)
-            (api/status :send-status (fn [request]
-                                       (if (:pull-request-number request)
-                                         (gstring/format
-                                          "**StringReplaceSkill** handled Push Event:  [PR raised](%s)"
-                                          (pr-link request))
-                                         "Push event handler completed without raising PullRequest"))))
-        request)
-
-       (contains? (:data request) :OnSchedule)
-       ((-> (api/finished :message "String-Replace scheduled")
-            (api/from (fn [{:keys [plan]}]
-                        (let [details
-                              (->> plan
-                                   (map #(select-keys % [:pull-request-number :edit-result :ref]))
-                                   (into []))]
-                          (cljs.pprint/pprint details)
-                          details)) :key :batch-details)
-            (api/repo-iterator (fn [request ref] (repo-filter/ref-matches-repo-filter? request ref (:scope request)))
-                               (-> (api/finished)
-                                   (run-editors)
-                                   (api/edit-inside-PR :pr-config)
-                                   (api/clone-ref)
-                                   (check-for-new-pull-request)))
-            (check-config)
-            (add-default-glob-pattern)
-            (api/add-skill-config :glob-pattern :expression :scope :parserType)
-            (api/status :send-status (fn [request]
-                                       (let [c (->> (:plan request)
-                                                    (filter :pull-request-number)
-                                                    (count))]
-                                         (gstring/format "%d open Pull Requests" c)))))
-        (assoc request :branch "master"))
-
-       :else
-       (go
-         (log/errorf "Unrecognized event %s" request)
-         (<! (api/finish request)))))))

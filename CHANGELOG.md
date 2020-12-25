@@ -5,7 +5,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased](https://github.com/atomist-skills/string-replace-skill/compare/0.4.7...HEAD)
+## [Unreleased](https://github.com/atomist-skills/string-replace-skill/compare/0.4.13...HEAD)
+
+## [0.4.13](https://github.com/atomist-skills/string-replace-skill/compare/0.4.7...0.4.13) - 2020-12-25
 
 ## [0.4.7](https://github.com/atomist-skills/string-replace-skill/compare/0.4.6...0.4.7) - 2020-12-24
 

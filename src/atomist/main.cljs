@@ -78,11 +78,12 @@
                           #_(file-stream-editor (:expression request)))]
           (<! (handler (assoc request
                               :editor editor
-                              :pr-config {:target-branch "master"
+                              :pr-config {:target-branch (or (-> request :data :Push first :repo :defaultBranch)
+                                                             (:default_branch (<! (github/repo request))))
                                           :branch (-> request 
                                                       :configuration 
                                                       :name 
-                                                      (config->branch-name (or (:branch request) (-> request :ref :branch))))
+                                                        (config->branch-name (-> request :ref :branch)))
                                           :title (-> request :configuration :name)
                                           :body (gstring/format "Ran string replacement `%s` on %s\n[atomist:edited]"
                                                                 (:expression request)

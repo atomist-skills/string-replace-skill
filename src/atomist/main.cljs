@@ -79,7 +79,10 @@
           (<! (handler (assoc request
                               :editor editor
                               :pr-config {:target-branch "master"
-                                          :branch (-> request :configuration :name (config->branch-name (or (:branch request) (-> request :ref :branch))))
+                                          :branch (-> request 
+                                                      :configuration 
+                                                      :name 
+                                                      (config->branch-name (or (:branch request) (-> request :ref :branch))))
                                           :title (-> request :configuration :name)
                                           :body (gstring/format "Ran string replacement `%s` on %s\n[atomist:edited]"
                                                                 (:expression request)
@@ -213,7 +216,7 @@
       (log-attempt)
       (api/extract-github-token)
       (skip-if-not-master)
-      (api/create-ref-from-push-event)
+      (api/create-ref-from-event)
       (add-default-glob-pattern)
       (skip-if-configuration-has-schedule)
       (api/add-skill-config)
@@ -255,14 +258,10 @@
       data - Incoming Request #js object
       sendreponse - callback ([obj]) puts an outgoing message on the response topic"
   [data sendreponse]
-  (println "start handler")
   (api/make-request
    data
    sendreponse
    (fn [request]
-     (println "hey")
-     (println request)
-     (log/info request)
      ((-> #(go %)
           (api/mw-dispatch {:FindUrlSkill find-url-handler
                             :StringReplaceSkill string-replace-skill

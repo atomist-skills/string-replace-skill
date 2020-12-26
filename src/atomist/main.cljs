@@ -80,10 +80,10 @@
                               :editor editor
                               :pr-config {:target-branch (or (-> request :data :Push first :repo :defaultBranch)
                                                              (:default_branch (<! (github/repo request))))
-                                          :branch (-> request 
-                                                      :configuration 
-                                                      :name 
-                                                        (config->branch-name (-> request :ref :branch)))
+                                          :branch (-> request
+                                                      :configuration
+                                                      :name
+                                                      (config->branch-name (-> request :ref :branch)))
                                           :title (-> request :configuration :name)
                                           :body (gstring/format "Ran string replacement `%s` on %s\n[atomist:edited]"
                                                                 (:expression request)

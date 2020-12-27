@@ -153,11 +153,10 @@
 (defn skip-if-not-master [handler]
   (fn [request]
     (go
-      (if (or (= "master" (or (:branch request)
-                              (-> request :ref :branch)))
+      (if (or (= (-> request :data :Push first :repo :defaultBranch) (-> request :ref :branch))
               (= "pr" (:update request)))
         (<! (handler request))
-        (<! (api/finish :success "skipping" :visibility :hidden))))))
+        (<! (api/finish request :success "skipping" :visibility :hidden))))))
 
 (defn skip-if-configuration-has-schedule [handler]
   (fn [request]

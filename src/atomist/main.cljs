@@ -1,5 +1,3 @@
-;; Copyright © 2020 Atomist, Inc.
-;;
 ;; Licensed under the Apache License, Version 2.0 (the "License");
 ;; you may not use this file except in compliance with the License.
 ;; You may obtain a copy of the License at
@@ -57,10 +55,10 @@
 (defn config->branch-name [config-name branch-name]
   (gstring/format "%s-on-%s"
                   (-> config-name (s/replace-all #"\s" ""))
-                  branch-name))
+                  (or branch-name "default")))
 
 (defn check-config
-  "prepare editor based on configuration"
+  "prepare editor based on configuration - the ref could already be present but for schedules, it will not be."
   [handler]
   (fn [request]
     (go
@@ -91,7 +89,11 @@
                                                                      (map #(gstring/format "`%s`" %))
                                                                      (interpose ",")
                                                                      (apply str)))})))
-          (<! (api/finish request :failure (gstring/format "this skill will only run expressions of the kind s/.*/.*/g?" (:expression request)))))
+          (<! (api/finish request 
+                          :failure 
+                          (gstring/format 
+                            "this skill will only run expressions of the kind s/.*/.*/g?" 
+                            (:expression request)))))
         (do
           (log/warn "run-editors requires both a glob-pattern and an expression")
           (<! (api/finish request :failure "configuration did not contain `expression` and `glob-pattern`")))))))
@@ -237,12 +239,13 @@
                              (into []))]
                     (cljs.pprint/pprint details)
                     details)) :key :batch-details)
-      (api/repo-iterator (fn [request ref] (repo-filter/ref-matches-repo-filter? request ref (:scope request)))
+      (api/repo-iterator (fn [request ref] (go (repo-filter/ref-matches-repo-filter? request ref (:scope request))))
                          (-> (api/finished)
                              (run-editors)
                              (api/edit-inside-PR :pr-config)
                              (api/clone-ref)
                              (check-for-new-pull-request)))
+      ((fn [handler] (fn [request] (go (log/infof "pr-config %s" (:pr-config request)) (<! (handler request))))))
       (check-config)
       (add-default-glob-pattern)
       (api/add-skill-config)

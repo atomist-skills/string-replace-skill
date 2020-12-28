@@ -89,11 +89,11 @@
                                                                      (map #(gstring/format "`%s`" %))
                                                                      (interpose ",")
                                                                      (apply str)))})))
-          (<! (api/finish request 
-                          :failure 
-                          (gstring/format 
-                            "this skill will only run expressions of the kind s/.*/.*/g?" 
-                            (:expression request)))))
+          (<! (api/finish request
+                          :failure
+                          (gstring/format
+                           "this skill will only run expressions of the kind s/.*/.*/g?"
+                           (:expression request)))))
         (do
           (log/warn "run-editors requires both a glob-pattern and an expression")
           (<! (api/finish request :failure "configuration did not contain `expression` and `glob-pattern`")))))))

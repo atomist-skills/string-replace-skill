@@ -15,7 +15,7 @@ This page details all runtime dependencies of `string-replace-skill`.
 | [CC0-1.0](#cc0-10)            | 1     |
 | [GPL-2.0](#gpl-20)            | 1     |
 | [ISC](#isc)                   | 27    |
-| [MIT](#mit)                   | 144   |
+| [MIT](#mit)                   | 143   |
 | [UNKNOWN](#unknown)           | 1     |
 
 #### Apache
@@ -39,7 +39,7 @@ Apache License 2.0 - [http://www.apache.org/licenses/LICENSE-2.0](http://www.apa
 | `@google-cloud/projectify`            | `2.0.1`      | Google Inc.           | [https://github.com/googleapis/nodejs-projectify](https://github.com/googleapis/nodejs-projectify)                               |
 | `@google-cloud/promisify`             | `2.0.3`      | Google Inc.           | [https://github.com/googleapis/nodejs-promisify](https://github.com/googleapis/nodejs-promisify)                                 |
 | `@google-cloud/pubsub`                | `2.7.0`      | Google Inc.           | [https://github.com/googleapis/nodejs-pubsub](https://github.com/googleapis/nodejs-pubsub)                                       |
-| `@google-cloud/storage`               | `5.7.0`      | Google Inc.           | [https://github.com/googleapis/nodejs-storage](https://github.com/googleapis/nodejs-storage)                                     |
+| `@google-cloud/storage`               | `5.7.1`      | Google Inc.           | [https://github.com/googleapis/nodejs-storage](https://github.com/googleapis/nodejs-storage)                                     |
 | `@grpc/grpc-js`                       | `1.1.7`      | Google Inc.           | [https://github.com/grpc/grpc-node/tree/master/packages/grpc-js](https://github.com/grpc/grpc-node/tree/master/packages/grpc-js) |
 | `@grpc/grpc-js`                       | `1.1.8`      | Google Inc.           | [https://github.com/grpc/grpc-node/tree/master/packages/grpc-js](https://github.com/grpc/grpc-node/tree/master/packages/grpc-js) |
 | `@grpc/proto-loader`                  | `0.5.3`      | Google Inc.           | [https://github.com/grpc/grpc-node](https://github.com/grpc/grpc-node)                                                           |
@@ -240,9 +240,8 @@ MIT License - [https://opensource.org/licenses/MIT](https://opensource.org/licen
 | `mentions-regex`          | `2.0.3`    | Charlike Mike Reagent | [https://github.com/regexps/mentions-regex](https://github.com/regexps/mentions-regex)                                                         |
 | `merge2`                  | `1.4.1`    |                       | [https://github.com/teambition/merge2](https://github.com/teambition/merge2)                                                                   |
 | `micromatch`              | `4.0.2`    | Jon Schlinkert        | [https://github.com/micromatch/micromatch](https://github.com/micromatch/micromatch)                                                           |
-| `mime-db`                 | `1.44.0`   |                       | [https://github.com/jshttp/mime-db](https://github.com/jshttp/mime-db)                                                                         |
 | `mime-db`                 | `1.45.0`   |                       | [https://github.com/jshttp/mime-db](https://github.com/jshttp/mime-db)                                                                         |
-| `mime-types`              | `2.1.27`   |                       | [https://github.com/jshttp/mime-types](https://github.com/jshttp/mime-types)                                                                   |
+| `mime-types`              | `2.1.28`   |                       | [https://github.com/jshttp/mime-types](https://github.com/jshttp/mime-types)                                                                   |
 | `mime`                    | `2.4.6`    | Robert Kieffer        | [https://github.com/broofa/mime](https://github.com/broofa/mime)                                                                               |
 | `mimic-fn`                | `2.1.0`    | Sindre Sorhus         | [https://github.com/sindresorhus/mimic-fn](https://github.com/sindresorhus/mimic-fn)                                                           |
 | `ms`                      | `2.1.2`    |                       | [https://github.com/zeit/ms](https://github.com/zeit/ms)                                                                                       |

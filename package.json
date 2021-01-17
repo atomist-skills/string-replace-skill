@@ -14,7 +14,7 @@
     "@google-cloud/pubsub": "^2.8.0",
     "@google-cloud/storage": "^5.7.2",
     "copyright-regex": "^1.1.6",
-    "fast-glob": "^3.2.4",
+    "fast-glob": "^3.2.5",
     "filename-regex": "^2.0.1",
     "iconv-lite": "^0.4.19",
     "mentions-regex": "^2.0.3",

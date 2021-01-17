@@ -126,7 +126,7 @@ ISC License - [https://www.isc.org/downloads/software-support-policy/isc-license
 | Name                    | Version  | Publisher          | Repository                                                                                         |
 | ----------------------- | -------- | ------------------ | -------------------------------------------------------------------------------------------------- |
 | `cliui`                 | `6.0.0`  | Ben Coe            | [https://github.com/yargs/cliui](https://github.com/yargs/cliui)                                   |
-| `fastq`                 | `1.8.0`  | Matteo Collina     | [https://github.com/mcollina/fastq](https://github.com/mcollina/fastq)                             |
+| `fastq`                 | `1.10.0` | Matteo Collina     | [https://github.com/mcollina/fastq](https://github.com/mcollina/fastq)                             |
 | `fs.realpath`           | `1.0.0`  | Isaac Z. Schlueter | [https://github.com/isaacs/fs.realpath](https://github.com/isaacs/fs.realpath)                     |
 | `get-caller-file`       | `2.0.5`  | Stefan Penner      | [https://github.com/stefanpenner/get-caller-file](https://github.com/stefanpenner/get-caller-file) |
 | `glob-parent`           | `5.1.1`  | Gulp Team          | [https://github.com/gulpjs/glob-parent](https://github.com/gulpjs/glob-parent)                     |
@@ -159,9 +159,9 @@ MIT License - [https://opensource.org/licenses/MIT](https://opensource.org/licen
 
 | Name                      | Version    | Publisher             | Repository                                                                                                                                     |
 | ------------------------- | ---------- | --------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
-| `@nodelib/fs.scandir`     | `2.1.3`    |                       | [https://github.com/nodelib/nodelib/tree/master/packages/fs/fs.scandir](https://github.com/nodelib/nodelib/tree/master/packages/fs/fs.scandir) |
-| `@nodelib/fs.stat`        | `2.0.3`    |                       | [https://github.com/nodelib/nodelib/tree/master/packages/fs/fs.stat](https://github.com/nodelib/nodelib/tree/master/packages/fs/fs.stat)       |
-| `@nodelib/fs.walk`        | `1.2.4`    |                       | [https://github.com/nodelib/nodelib/tree/master/packages/fs/fs.walk](https://github.com/nodelib/nodelib/tree/master/packages/fs/fs.walk)       |
+| `@nodelib/fs.scandir`     | `2.1.4`    |                       | [https://github.com/nodelib/nodelib/tree/master/packages/fs/fs.scandir](https://github.com/nodelib/nodelib/tree/master/packages/fs/fs.scandir) |
+| `@nodelib/fs.stat`        | `2.0.4`    |                       | [https://github.com/nodelib/nodelib/tree/master/packages/fs/fs.stat](https://github.com/nodelib/nodelib/tree/master/packages/fs/fs.stat)       |
+| `@nodelib/fs.walk`        | `1.2.6`    |                       | [https://github.com/nodelib/nodelib/tree/master/packages/fs/fs.walk](https://github.com/nodelib/nodelib/tree/master/packages/fs/fs.walk)       |
 | `@tootallnate/once`       | `1.1.2`    | Nathan Rajlich        | [https://github.com/TooTallNate/once](https://github.com/TooTallNate/once)                                                                     |
 | `@types/color-name`       | `1.1.1`    |                       | [https://github.com/DefinitelyTyped/DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped)                                       |
 | `@types/duplexify`        | `3.6.0`    |                       | [https://github.com/DefinitelyTyped/DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped)                                       |
@@ -204,7 +204,7 @@ MIT License - [https://opensource.org/licenses/MIT](https://opensource.org/licen
 | `ent`                     | `2.2.0`    | James Halliday        | [https://github.com/substack/node-ent](https://github.com/substack/node-ent)                                                                   |
 | `event-target-shim`       | `5.0.1`    | Toru Nagashima        | [https://github.com/mysticatea/event-target-shim](https://github.com/mysticatea/event-target-shim)                                             |
 | `extend`                  | `3.0.2`    | Stefan Thomas         | [https://github.com/justmoon/node-extend](https://github.com/justmoon/node-extend)                                                             |
-| `fast-glob`               | `3.2.4`    | Denis Malinochkin     | [https://github.com/mrmlnc/fast-glob](https://github.com/mrmlnc/fast-glob)                                                                     |
+| `fast-glob`               | `3.2.5`    | Denis Malinochkin     | [https://github.com/mrmlnc/fast-glob](https://github.com/mrmlnc/fast-glob)                                                                     |
 | `filename-regex`          | `2.0.1`    | Jon Schlinkert        | [https://github.com/regexhq/filename-regex](https://github.com/regexhq/filename-regex)                                                         |
 | `fill-range`              | `7.0.1`    | Jon Schlinkert        | [https://github.com/jonschlinkert/fill-range](https://github.com/jonschlinkert/fill-range)                                                     |
 | `find-up`                 | `4.1.0`    | Sindre Sorhus         | [https://github.com/sindresorhus/find-up](https://github.com/sindresorhus/find-up)                                                             |
@@ -267,7 +267,7 @@ MIT License - [https://opensource.org/licenses/MIT](https://opensource.org/licen
 | `require-directory`       | `2.1.1`    | Troy Goode            | [https://github.com/troygoode/node-require-directory](https://github.com/troygoode/node-require-directory)                                     |
 | `retry-request`           | `4.1.1`    | Stephen Sawchuk       | [https://github.com/stephenplusplus/retry-request](https://github.com/stephenplusplus/retry-request)                                           |
 | `reusify`                 | `1.0.4`    | Matteo Collina        | [https://github.com/mcollina/reusify](https://github.com/mcollina/reusify)                                                                     |
-| `run-parallel`            | `1.1.9`    | Feross Aboukhadijeh   | [https://github.com/feross/run-parallel](https://github.com/feross/run-parallel)                                                               |
+| `run-parallel`            | `1.1.10`   | Feross Aboukhadijeh   | [https://github.com/feross/run-parallel](https://github.com/feross/run-parallel)                                                               |
 | `safe-buffer`             | `5.0.1`    | Feross Aboukhadijeh   | [https://github.com/feross/safe-buffer](https://github.com/feross/safe-buffer)                                                                 |
 | `safe-buffer`             | `5.1.2`    | Feross Aboukhadijeh   | [https://github.com/feross/safe-buffer](https://github.com/feross/safe-buffer)                                                                 |
 | `safe-buffer`             | `5.2.0`    | Feross Aboukhadijeh   | [https://github.com/feross/safe-buffer](https://github.com/feross/safe-buffer)                                                                 |

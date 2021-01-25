@@ -15,7 +15,7 @@ This page details all runtime dependencies of `string-replace-skill`.
 | [CC0-1.0](#cc0-10)            | 1     |
 | [GPL-2.0](#gpl-20)            | 1     |
 | [ISC](#isc)                   | 27    |
-| [MIT](#mit)                   | 143   |
+| [MIT](#mit)                   | 145   |
 | [UNKNOWN](#unknown)           | 1     |
 
 #### Apache
@@ -39,7 +39,7 @@ Apache License 2.0 - [http://www.apache.org/licenses/LICENSE-2.0](http://www.apa
 | `@google-cloud/projectify`            | `2.0.1`      | Google Inc.           | [https://github.com/googleapis/nodejs-projectify](https://github.com/googleapis/nodejs-projectify)                               |
 | `@google-cloud/promisify`             | `2.0.3`      | Google Inc.           | [https://github.com/googleapis/nodejs-promisify](https://github.com/googleapis/nodejs-promisify)                                 |
 | `@google-cloud/pubsub`                | `2.8.0`      | Google Inc.           | [https://github.com/googleapis/nodejs-pubsub](https://github.com/googleapis/nodejs-pubsub)                                       |
-| `@google-cloud/storage`               | `5.7.2`      | Google Inc.           | [https://github.com/googleapis/nodejs-storage](https://github.com/googleapis/nodejs-storage)                                     |
+| `@google-cloud/storage`               | `5.7.3`      | Google Inc.           | [https://github.com/googleapis/nodejs-storage](https://github.com/googleapis/nodejs-storage)                                     |
 | `@grpc/grpc-js`                       | `1.1.7`      | Google Inc.           | [https://github.com/grpc/grpc-node/tree/master/packages/grpc-js](https://github.com/grpc/grpc-node/tree/master/packages/grpc-js) |
 | `@grpc/grpc-js`                       | `1.2.3`      | Google Inc.           | [https://github.com/grpc/grpc-node/tree/master/packages/grpc-js](https://github.com/grpc/grpc-node/tree/master/packages/grpc-js) |
 | `@grpc/proto-loader`                  | `0.5.3`      | Google Inc.           | [https://github.com/grpc/grpc-node](https://github.com/grpc/grpc-node)                                                           |
@@ -179,6 +179,7 @@ MIT License - [https://opensource.org/licenses/MIT](https://opensource.org/licen
 | `ansi-styles`             | `4.2.1`    | Sindre Sorhus         | [https://github.com/chalk/ansi-styles](https://github.com/chalk/ansi-styles)                                                                   |
 | `argparse`                | `1.0.10`   |                       | [https://github.com/nodeca/argparse](https://github.com/nodeca/argparse)                                                                       |
 | `arrify`                  | `2.0.1`    | Sindre Sorhus         | [https://github.com/sindresorhus/arrify](https://github.com/sindresorhus/arrify)                                                               |
+| `async-retry`             | `1.3.1`    |                       | [https://github.com/zeit/async-retry](https://github.com/zeit/async-retry)                                                                     |
 | `balanced-match`          | `1.0.0`    | Julian Gruber         | [https://github.com/juliangruber/balanced-match](https://github.com/juliangruber/balanced-match)                                               |
 | `base64-js`               | `1.3.1`    | T. Jameson Little     | [https://github.com/beatgammit/base64-js](https://github.com/beatgammit/base64-js)                                                             |
 | `bignumber.js`            | `9.0.1`    | Michael Mclaughlin    | [https://github.com/MikeMcl/bignumber.js](https://github.com/MikeMcl/bignumber.js)                                                             |
@@ -266,6 +267,7 @@ MIT License - [https://opensource.org/licenses/MIT](https://opensource.org/licen
 | `regex-email`             | `1.0.2`    |                       | [https://github.com/regexps/regex-email](https://github.com/regexps/regex-email)                                                               |
 | `require-directory`       | `2.1.1`    | Troy Goode            | [https://github.com/troygoode/node-require-directory](https://github.com/troygoode/node-require-directory)                                     |
 | `retry-request`           | `4.1.1`    | Stephen Sawchuk       | [https://github.com/stephenplusplus/retry-request](https://github.com/stephenplusplus/retry-request)                                           |
+| `retry`                   | `0.12.0`   | Tim Koschützki        | [https://github.com/tim-kos/node-retry](https://github.com/tim-kos/node-retry)                                                                 |
 | `reusify`                 | `1.0.4`    | Matteo Collina        | [https://github.com/mcollina/reusify](https://github.com/mcollina/reusify)                                                                     |
 | `run-parallel`            | `1.1.10`   | Feross Aboukhadijeh   | [https://github.com/feross/run-parallel](https://github.com/feross/run-parallel)                                                               |
 | `safe-buffer`             | `5.0.1`    | Feross Aboukhadijeh   | [https://github.com/feross/safe-buffer](https://github.com/feross/safe-buffer)                                                                 |

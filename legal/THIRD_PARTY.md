@@ -307,9 +307,9 @@ MIT License - [https://opensource.org/licenses/MIT](https://opensource.org/licen
 
 #### UNKNOWN
 
-| Name                | Version   | Publisher       | Repository |
-| ------------------- | --------- | --------------- | ---------- |
-| `@atomist/api-cljs` | `0.4.146` | jim@atomist.com |            |
+| Name                | Version | Publisher       | Repository |
+| ------------------- | ------- | --------------- | ---------- |
+| `@atomist/api-cljs` | `0.5.6` | jim@atomist.com |            |
 
 ## Contact
 

@@ -25,7 +25,7 @@
 
 (ns atomist.main
   (:require [cljs.pprint :refer [pprint]]
-            [cljs.core.async :refer [<! >! timeout chan]]
+            [cljs.core.async :refer [<! >! timeout chan] :refer-macros [go]]
             [clojure.string :as s]
             [goog.string :as gstring]
             [goog.string.format]
@@ -37,33 +37,32 @@
             [atomist.canned-regexes :as regexes]
             [atomist.sed :as sed]
             [atomist.regex :as regex]
-            [cljs-node-io.core :as io])
-  (:require-macros [cljs.core.async.macros :refer [go]]))
+            [cljs-node-io.core :as io]
+            [atomist.async :refer-macros [go-safe <?]]))
 
 (defn compile-simple-content-editor
   "compile a file editor
     params
-      request
-      content-editor (File String) => String"
+      request - request must have an editor (File String) => channel containing edited content
+    returns content-editor (File) => channel with true or exception from editor channel"
   [request]
   (fn [f]
-    (go
-      (api/trace "compile-simple-content-editor")
-      (try
-        (let [content (io/slurp f)
-              {:keys [error new-content]} (<! ((:editor request) f content))]
-          (cond
-            (= content new-content)
-            (log/debug "content not changed")
+    (go-safe
+     (api/trace "run simple-content-editor")
 
-            (and new-content (not error))
-            (io/spit f new-content)
+     (let [content (io/slurp f)
+           {:keys [error new-content]} (<? ((:editor request) f content))]
+       (cond
+         (= content new-content)
+         (log/debug "content not changed")
 
-            :else
-            (log/errorf "error running stream editor: %s" error)))
-        (catch :default ex
-          (log/error ex "failed to run editor")))
-      true)))
+         (and new-content (not error))
+         (io/spit f new-content)
+
+         :else
+         (log/errorf "error running stream editor: %s" error)))
+
+     true)))
 
 (defn config->branch-name [config-name branch-name]
   (gstring/format "%s-on-%s"
@@ -74,7 +73,7 @@
   "prepare editor based on configuration - the ref could already be present but for schedules, it will not be."
   [handler]
   (fn [request]
-    (go
+    (go-safe
       (api/trace "check-config")
       (if (and (:expression request) (:glob-pattern request) (not (empty? (:glob-pattern request))))
         (if-let [editor (cond
@@ -92,6 +91,7 @@
                               :pr-config {:target-branch (or (-> request :data :Push first :repo :defaultBranch)
                                                              (:default_branch (<! (github/repo request))))
                                           :branch (-> request
+                                                      :skill
                                                       :configuration
                                                       :name
                                                       (config->branch-name (-> request :ref :branch)))
@@ -102,20 +102,22 @@
                                                                      (map #(gstring/format "`%s`" %))
                                                                      (interpose ",")
                                                                      (apply str)))})))
-          (<! (api/finish request
-                          :failure
-                          (gstring/format
-                           "this skill will only run expressions of the kind s/.*/.*/g?"
-                           (:expression request)))))
+          (assoc request
+                 :atomist/status {:code 1
+                                  :reason (gstring/format
+                                           "this skill will only run expressions of the kind s/.*/.*/g?"
+                                           (:expression request))}))
+
         (do
           (log/warn "run-editors requires both a glob-pattern and an expression")
-          (<! (api/finish request :failure "configuration did not contain `expression` and `glob-pattern`")))))))
+          (assoc request :atomist/status {:code 1
+                                          :reason "configuration did not contain `expression` and `glob-pattern`" }))))))
 
 (defn check-for-new-pull-request
   "set up branch-name and watch for new pull requests if they occur"
   [handler]
   (fn [request]
-    (go
+    (go-safe
       (api/trace "check-for-new-pull-request(enter)")
       (let [response (<! (handler request))]
         (api/trace "check-for-new-pull-request(exit)")
@@ -135,18 +137,17 @@
      TODO - branch naming guidelines should be target branch specific"
   [handler]
   (fn [request]
-    (go
-      (api/trace "run-editors")
-      (<! ((-> (compile-simple-content-editor request)
-               (editors/do-with-glob-patterns (:glob-pattern request))
-               (editors/check-do-with-glob-patterns-errors)) (:project request)))
-      (<! (handler request)))))
-
-(defn log-attempt [handler]
-  (fn [request]
-    (go
-      (log/infof "Push Request %s over %s on %s" (:expression request) (:glob-pattern request) (:ref request))
-      (<! (handler request)))))
+    (go-safe
+     (api/trace "run-editors")
+     (try
+       (<? ((-> (compile-simple-content-editor request)
+                (editors/do-with-glob-patterns (:glob-pattern request))
+                (editors/check-do-with-glob-patterns-errors)) (:project request)))
+       (<! (handler request))
+       (catch :default ex
+         (log/error ex "error running editors")
+         (<! (handler (assoc request :atomist/status {:code 1
+                                                      :reason (.-message ex)}))))))))
 
 (defn add-default-glob-pattern [handler]
   (fn [request]
@@ -160,18 +161,13 @@
 (defn pr-link [request]
   (gstring/format "https://github.com/%s/%s/pull/%s" (-> request :ref :owner) (-> request :ref :repo) (or (-> request :pull-request-number) "")))
 
-(defn send-status [request]
-  (if (and (:pull-request-number request) (= :raised (:edit-result request)))
-    (gstring/format "**StringReplaceSkill** completed successfully:  [PR raised](%s)" (pr-link request))
-    "completed without raising PullRequest"))
-
-(defn skip-if-not-master [handler]
+(defn skip-if-not-default-branch [handler]
   (fn [request]
     (go
       (if (or (= (-> request :data :Push first :repo :defaultBranch) (-> request :ref :branch))
               (= "pr" (:update request)))
         (<! (handler request))
-        (<! (api/finish request :success "skipping" :visibility :hidden))))))
+        (assoc request :atomist/status {:code 0 :reason "skipping" :visibility :hidden})))))
 
 (defn skip-if-configuration-has-schedule [handler]
   (fn [request]
@@ -179,10 +175,12 @@
       (api/trace "skip-if-configuration-has-schedule")
       (if (nil? (:schedule request))
         (<! (handler request))
-        (<! (api/finish request :success "skip Pushes with schedules" :visibility :hidden))))))
+        (assoc request :atomist/status {:code 0 
+                                        :reason "skip Pushes with schedules" 
+                                        :visibility :hidden})))))
 
 (def find-url-handler
-  (-> (api/finished :message "successfully ran FindUrlSkill")
+  (-> (api/finished)
       (regexes/run-regular-expressions)
       (api/clone-ref)
       (api/create-ref-from-first-linked-repo)
@@ -192,18 +190,15 @@
       (api/from (fn [request] (conj [] (:glob-pattern request))) :key :glob-pattern)
       (api/extract-cli-parameters [[nil "--url" nil]
                                    [nil "--glob-pattern PATTERN" "glob pattern"]])
-      (api/set-message-id)
-      (api/status)))
+      (api/set-message-id)))
 
 (def string-replace-skill
-  (-> (api/finished :message "CommandHandler"
-                    :send-status send-status)
+  (-> (api/finished)
       (run-editors)
       (api/edit-inside-PR :pr-config)
       (api/clone-ref)
       (check-for-new-pull-request)
       (check-config)
-      (log-attempt)
       (api/add-skill-config-by-configuration-parameter :configuration :glob-pattern :expression :scope :update)
       (api/create-ref-from-first-linked-repo)
       (api/extract-linked-repos)
@@ -215,36 +210,48 @@
       (api/extract-cli-parameters [[nil "--configuration PATTERN" "existing configuration"]
                                    [nil "--commit-on-master"]])
       (api/set-message-id)
-      (api/status :send-status (fn [request]
-                                 (if (:pull-request-number request)
-                                   (gstring/format "**StringReplaceSkill** CommandHandler completed successfully:  [PR raised](%s)" (pr-link request))
-                                   "CommandHandler completed without raising PullRequest")))))
+      ((fn [handler] (fn [request]
+                       (go-safe
+                        (let [response (<! (handler request))]
+                          (assoc response
+                                 :atomist/status
+                                 {:code 0
+                                  :reason
+                                  (if (:pull-request-number response)
+                                    (gstring/format
+                                     "**StringReplaceSkill** CommandHandler completed successfully:  [PR raised](%s)"
+                                     (pr-link response))
+                                    "CommandHandler completed without raising PullRequest")})))))))) 
 
 (def on-push
-  (-> (api/finished :message "Push event"
-                    :send-status send-status)
+  (-> (api/finished)
       (run-editors)
       (api/edit-inside-PR :pr-config)
       (api/clone-ref)
       (check-for-new-pull-request)
       (check-config)
-      (log-attempt)
       (api/extract-github-token)
-      (skip-if-not-master)
+      (skip-if-not-default-branch)
       (api/create-ref-from-event)
       (add-default-glob-pattern)
       (skip-if-configuration-has-schedule)
       (api/add-skill-config)
       (api/skip-push-if-atomist-edited)
-      (api/status :send-status (fn [request]
-                                 (if (:pull-request-number request)
-                                   (gstring/format
-                                    "**StringReplaceSkill** handled Push Event:  [PR raised](%s)"
-                                    (pr-link request))
-                                   "Push event handler completed without raising PullRequest")))))
+      ((fn [handler] (fn [request]
+                       (go-safe
+                        (let [response (<! (handler request))]
+                          (assoc response
+                                 :atomist/status
+                                 {:code 0
+                                  :reason
+                                  (if (:pull-request-number response)
+                                    (gstring/format
+                                     "**StringReplaceSkill** handled Push Event:  [PR raised](%s)"
+                                     (pr-link response))
+                                     "Push event handler completed without raising PullRequest")}))))))))
 
 (def on-schedule
-  (-> (api/finished :message "String-Replace scheduled")
+  (-> (api/finished)
       (api/from (fn [{:keys [plan]}]
                   (let [details
                         (->> plan
@@ -262,11 +269,18 @@
       (check-config)
       (add-default-glob-pattern)
       (api/add-skill-config)
-      (api/status :send-status (fn [request]
-                                 (let [c (->> (:plan request)
+      ((fn [handler] (fn [request]
+                       (go-safe
+                        (let [response (<! (handler request))]
+                          (assoc response
+                                 :atomist/status
+                                 {:code 0
+                                  :reason
+                                  (let [c (->> (:plan request)
                                               (filter :pull-request-number)
                                               (count))]
-                                   (gstring/format "%d open Pull Requests" c))))))
+                                   (gstring/format "%d open Pull Requests" c)) }))))))))
+
 (defn ^:export handler
   "handler
     must return a Promise - we don't do anything with the value
@@ -285,6 +299,7 @@
                             :OnSchedule on-schedule
                             :default #(go
                                         (log/errorf "Unrecognized event %s" %)
-                                        (<! (api/finish %)))})
-          (api/log-event)) request))))
+                                        %)})
+          (api/log-event)
+          (api/status)) request))))
 

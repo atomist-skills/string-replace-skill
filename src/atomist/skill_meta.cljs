@@ -3,6 +3,6 @@
 
 (def module-name "string-replace-skill")
 (def path ".")
-(def version "0.4.15")
-(def tag "0.4.15")
-(def generated-at "2020-12-28T20:44:31Z")
+(def version "0.4.18")
+(def tag "0.4.18")
+(def generated-at "2021-02-06T06:00:16Z")

@@ -74,55 +74,55 @@
   [handler]
   (fn [request]
     (go-safe
-      (api/trace "check-config")
-      (if (and (:expression request) (:glob-pattern request) (not (empty? (:glob-pattern request))))
-        (if-let [editor (cond
-                          (#{"basic" "extended"} (:parserType request))
-                          (sed/file-stream-editor (:expression request) :type (:parserType request))
-                          (= "perl" (:parserType request))
-                          (let [[_ search replace opts] (re-find #"s/(.*)/(.*)/([gim]?)" (:expression request))]
-                            (regex/content-editor search replace opts))
-                          :else
-                          (let [[_ search replace opts] (re-find #"s/(.*)/(.*)/([gim]?)" (:expression request))]
-                            (regex/content-editor search replace opts))
-                          #_(file-stream-editor (:expression request)))]
-          (<! (handler (assoc request
-                              :editor editor
-                              :pr-config {:target-branch (or (-> request :data :Push first :repo :defaultBranch)
-                                                             (:default_branch (<! (github/repo request))))
-                                          :branch (-> request
-                                                      :skill
-                                                      :configuration
-                                                      :name
-                                                      (config->branch-name (-> request :ref :branch)))
-                                          :title (-> request :configuration :name)
-                                          :body (gstring/format "Ran string replacement `%s` on %s\n[atomist:edited]"
-                                                                (:expression request)
-                                                                (->> (:glob-pattern request)
-                                                                     (map #(gstring/format "`%s`" %))
-                                                                     (interpose ",")
-                                                                     (apply str)))})))
-          (assoc request
-                 :atomist/status {:code 1
-                                  :reason (gstring/format
-                                           "this skill will only run expressions of the kind s/.*/.*/g?"
-                                           (:expression request))}))
+     (api/trace "check-config")
+     (if (and (:expression request) (:glob-pattern request) (not (empty? (:glob-pattern request))))
+       (if-let [editor (cond
+                         (#{"basic" "extended"} (:parserType request))
+                         (sed/file-stream-editor (:expression request) :type (:parserType request))
+                         (= "perl" (:parserType request))
+                         (let [[_ search replace opts] (re-find #"s/(.*)/(.*)/([gim]?)" (:expression request))]
+                           (regex/content-editor search replace opts))
+                         :else
+                         (let [[_ search replace opts] (re-find #"s/(.*)/(.*)/([gim]?)" (:expression request))]
+                           (regex/content-editor search replace opts))
+                         #_(file-stream-editor (:expression request)))]
+         (<! (handler (assoc request
+                             :editor editor
+                             :pr-config {:target-branch (or (-> request :data :Push first :repo :defaultBranch)
+                                                            (:default_branch (<! (github/repo request))))
+                                         :branch (-> request
+                                                     :skill
+                                                     :configuration
+                                                     :name
+                                                     (config->branch-name (-> request :ref :branch)))
+                                         :title (-> request :configuration :name)
+                                         :body (gstring/format "Ran string replacement `%s` on %s\n[atomist:edited]"
+                                                               (:expression request)
+                                                               (->> (:glob-pattern request)
+                                                                    (map #(gstring/format "`%s`" %))
+                                                                    (interpose ",")
+                                                                    (apply str)))})))
+         (assoc request
+                :atomist/status {:code 1
+                                 :reason (gstring/format
+                                          "this skill will only run expressions of the kind s/.*/.*/g?"
+                                          (:expression request))}))
 
-        (do
-          (log/warn "run-editors requires both a glob-pattern and an expression")
-          (assoc request :atomist/status {:code 1
-                                          :reason "configuration did not contain `expression` and `glob-pattern`" }))))))
+       (do
+         (log/warn "run-editors requires both a glob-pattern and an expression")
+         (assoc request :atomist/status {:code 1
+                                         :reason "configuration did not contain `expression` and `glob-pattern`"}))))))
 
 (defn check-for-new-pull-request
   "set up branch-name and watch for new pull requests if they occur"
   [handler]
   (fn [request]
     (go-safe
-      (api/trace "check-for-new-pull-request(enter)")
-      (let [response (<! (handler request))]
-        (api/trace "check-for-new-pull-request(exit)")
-        (let [pullRequest (<! (github/pr-channel request (-> request :pr-config :branch)))]
-          (assoc response :pull-request-number (:number pullRequest)))))))
+     (api/trace "check-for-new-pull-request(enter)")
+     (let [response (<! (handler request))]
+       (api/trace "check-for-new-pull-request(exit)")
+       (let [pullRequest (<! (github/pr-channel request (-> request :pr-config :branch)))]
+         (assoc response :pull-request-number (:number pullRequest)))))))
 
 (defn run-editors
   "middleware
@@ -175,8 +175,8 @@
       (api/trace "skip-if-configuration-has-schedule")
       (if (nil? (:schedule request))
         (<! (handler request))
-        (assoc request :atomist/status {:code 0 
-                                        :reason "skip Pushes with schedules" 
+        (assoc request :atomist/status {:code 0
+                                        :reason "skip Pushes with schedules"
                                         :visibility :hidden})))))
 
 (def find-url-handler
@@ -221,7 +221,7 @@
                                     (gstring/format
                                      "**StringReplaceSkill** CommandHandler completed successfully:  [PR raised](%s)"
                                      (pr-link response))
-                                    "CommandHandler completed without raising PullRequest")})))))))) 
+                                    "CommandHandler completed without raising PullRequest")}))))))))
 
 (def on-push
   (-> (api/finished)
@@ -248,7 +248,7 @@
                                     (gstring/format
                                      "**StringReplaceSkill** handled Push Event:  [PR raised](%s)"
                                      (pr-link response))
-                                     "Push event handler completed without raising PullRequest")}))))))))
+                                    "Push event handler completed without raising PullRequest")}))))))))
 
 (def on-schedule
   (-> (api/finished)
@@ -277,9 +277,9 @@
                                  {:code 0
                                   :reason
                                   (let [c (->> (:plan request)
-                                              (filter :pull-request-number)
-                                              (count))]
-                                   (gstring/format "%d open Pull Requests" c)) }))))))))
+                                               (filter :pull-request-number)
+                                               (count))]
+                                    (gstring/format "%d open Pull Requests" c))}))))))))
 
 (defn ^:export handler
   "handler

@@ -6,17 +6,17 @@ This page details all runtime dependencies of `string-replace-skill`.
 
 ### Summary
 
-| License                                                                                        | Count |
-| ---------------------------------------------------------------------------------------------- | ----- |
-| [Apache-2.0](#apache-20)                                                                       | 35    |
-| [Apache](#apache)                                                                              | 1     |
-| [BSD-2-Clause](#bsd-2-clause)                                                                  | 6     |
-| [BSD-3-Clause](#bsd-3-clause)                                                                  | 16    |
-| [CC0-1.0](#cc0-10)                                                                             | 2     |
-| [Custom: https://img.shields.io/badge/dynamic/json](#custom-httpsimgshieldsiobadgedynamicjson) | 1     |
-| [GPL-2.0](#gpl-20)                                                                             | 1     |
-| [ISC](#isc)                                                                                    | 27    |
-| [MIT](#mit)                                                                                    | 151   |
+| License                       | Count |
+| ----------------------------- | ----- |
+| [Apache-2.0](#apache-20)      | 35    |
+| [Apache](#apache)             | 1     |
+| [BSD-2-Clause](#bsd-2-clause) | 6     |
+| [BSD-3-Clause](#bsd-3-clause) | 16    |
+| [CC0-1.0](#cc0-10)            | 2     |
+| [GPL-2.0](#gpl-20)            | 1     |
+| [ISC](#isc)                   | 27    |
+| [MIT](#mit)                   | 151   |
+| [UNKNOWN](#unknown)           | 1     |
 
 #### Apache
 
@@ -110,12 +110,6 @@ Creative Commons Zero v1.0 Universal - [https://creativecommons.org/publicdomain
 | ----------- | -------- | ------------- | -------------------------------------------------------------------------------------- |
 | `type-fest` | `0.17.0` | Sindre Sorhus | [https://github.com/sindresorhus/type-fest](https://github.com/sindresorhus/type-fest) |
 | `type-fest` | `0.20.2` | Sindre Sorhus | [https://github.com/sindresorhus/type-fest](https://github.com/sindresorhus/type-fest) |
-
-#### Custom: https://img.shields.io/badge/dynamic/json
-
-| Name                | Version  | Publisher       | Repository |
-| ------------------- | -------- | --------------- | ---------- |
-| `@atomist/api-cljs` | `0.5.41` | jim@atomist.com |            |
 
 #### GPL-2.0
 
@@ -316,6 +310,12 @@ MIT License - [https://opensource.org/licenses/MIT](https://opensource.org/licen
 | `xdg-basedir`             | `4.0.0`    | Sindre Sorhus         | [https://github.com/sindresorhus/xdg-basedir](https://github.com/sindresorhus/xdg-basedir)                                                     |
 | `yargs`                   | `15.4.1`   |                       | [https://github.com/yargs/yargs](https://github.com/yargs/yargs)                                                                               |
 | `yocto-queue`             | `0.1.0`    | Sindre Sorhus         | [https://github.com/sindresorhus/yocto-queue](https://github.com/sindresorhus/yocto-queue)                                                     |
+
+#### UNKNOWN
+
+| Name                | Version  | Publisher       | Repository |
+| ------------------- | -------- | --------------- | ---------- |
+| `@atomist/api-cljs` | `0.5.44` | jim@atomist.com |            |
 
 ## Contact
 

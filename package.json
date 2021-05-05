@@ -12,7 +12,7 @@
     "@atomist/api-cljs": "^0.5.55",
     "@atomist/skill-logging": "^0.2.6",
     "@google-cloud/pubsub": "^2.11.0",
-    "@google-cloud/storage": "^5.8.4",
+    "@google-cloud/storage": "^5.8.5",
     "copyright-regex": "^1.1.6",
     "fast-glob": "^3.2.5",
     "filename-regex": "^2.0.1",

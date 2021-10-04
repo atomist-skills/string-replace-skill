@@ -9,17 +9,17 @@ This page details all runtime dependencies of `string-replace-skill`.
 | License                              | Count |
 | ------------------------------------ | ----- |
 | [0BSD](#0bsd)                        | 5     |
-| [Apache-2.0](#apache-20)             | 45    |
+| [Apache-2.0](#apache-20)             | 37    |
 | [Apache](#apache)                    | 1     |
 | [BSD-2-Clause](#bsd-2-clause)        | 10    |
-| [BSD-3-Clause](#bsd-3-clause)        | 25    |
+| [BSD-3-Clause](#bsd-3-clause)        | 24    |
 | [CC-BY-4.0](#cc-by-40)               | 1     |
-| [CC0-1.0](#cc0-10)                   | 3     |
+| [CC0-1.0](#cc0-10)                   | 2     |
 | [GPL-2.0](#gpl-20)                   | 1     |
 | [GPL-3.0-or-later](#gpl-30-or-later) | 1     |
 | [ISC](#isc)                          | 45    |
 | [MIT AND Zlib](#mit-and-zlib)        | 1     |
-| [MIT](#mit)                          | 629   |
+| [MIT](#mit)                          | 625   |
 | [Public Domain](#public-domain)      | 1     |
 | [Python-2.0](#python-20)             | 1     |
 | [UNKNOWN](#unknown)                  | 1     |
@@ -52,9 +52,7 @@ Apache License 2.0 - [http://www.apache.org/licenses/LICENSE-2.0](http://www.apa
 | `@atomist/skill-logging`              | `1.0.5`          | Atomist, Inc.         | [https://github.com/atomist-skills/skill-logging](https://github.com/atomist-skills/skill-logging)                               |
 | `@atomist/skill`                      | `0.10.1-main.36` | Atomist, Inc.         | [https://github.com/atomist-skills/skill](https://github.com/atomist-skills/skill)                                               |
 | `@atomist/slack-messages`             | `1.2.2`          | Atomist               | [https://github.com/atomist/slack-messages](https://github.com/atomist/slack-messages)                                           |
-| `@google-cloud/common`                | `3.4.1`          | Google Inc.           | [https://github.com/googleapis/nodejs-common](https://github.com/googleapis/nodejs-common)                                       |
 | `@google-cloud/common`                | `3.6.0`          | Google Inc.           | [https://github.com/googleapis/nodejs-common](https://github.com/googleapis/nodejs-common)                                       |
-| `@google-cloud/logging`               | `8.0.8`          | Google Inc.           | [https://github.com/googleapis/nodejs-logging](https://github.com/googleapis/nodejs-logging)                                     |
 | `@google-cloud/logging`               | `8.2.0`          | Google Inc.           | [https://github.com/googleapis/nodejs-logging](https://github.com/googleapis/nodejs-logging)                                     |
 | `@google-cloud/paginator`             | `3.0.5`          | Google Inc.           | [https://github.com/googleapis/nodejs-paginator](https://github.com/googleapis/nodejs-paginator)                                 |
 | `@google-cloud/precise-date`          | `2.0.3`          | Google Inc.           | [https://github.com/googleapis/nodejs-precise-date](https://github.com/googleapis/nodejs-precise-date)                           |
@@ -62,10 +60,8 @@ Apache License 2.0 - [http://www.apache.org/licenses/LICENSE-2.0](http://www.apa
 | `@google-cloud/promisify`             | `2.0.3`          | Google Inc.           | [https://github.com/googleapis/nodejs-promisify](https://github.com/googleapis/nodejs-promisify)                                 |
 | `@google-cloud/pubsub`                | `2.11.0`         | Google Inc.           | [https://github.com/googleapis/nodejs-pubsub](https://github.com/googleapis/nodejs-pubsub)                                       |
 | `@google-cloud/storage`               | `5.8.5`          | Google Inc.           | [https://github.com/googleapis/nodejs-storage](https://github.com/googleapis/nodejs-storage)                                     |
-| `@grpc/grpc-js`                       | `1.1.7`          | Google Inc.           | [https://github.com/grpc/grpc-node/tree/master/packages/grpc-js](https://github.com/grpc/grpc-node/tree/master/packages/grpc-js) |
 | `@grpc/grpc-js`                       | `1.2.12`         | Google Inc.           | [https://github.com/grpc/grpc-node/tree/master/packages/grpc-js](https://github.com/grpc/grpc-node/tree/master/packages/grpc-js) |
 | `@grpc/proto-loader`                  | `0.5.3`          | Google Inc.           | [https://github.com/grpc/grpc-node](https://github.com/grpc/grpc-node)                                                           |
-| `@grpc/proto-loader`                  | `0.6.0-pre9`     | Google Inc.           | [https://github.com/grpc/grpc-node](https://github.com/grpc/grpc-node)                                                           |
 | `@opencensus/core`                    | `0.0.22`         | Google Inc.           | [https://github.com/census-instrumentation/opencensus-node](https://github.com/census-instrumentation/opencensus-node)           |
 | `@opencensus/propagation-stackdriver` | `0.0.22`         | OpenCensus Authors    | [https://github.com/census-instrumentation/opencensus-node](https://github.com/census-instrumentation/opencensus-node)           |
 | `@opentelemetry/api`                  | `0.18.1`         | OpenTelemetry Authors | [https://github.com/open-telemetry/opentelemetry-js-api](https://github.com/open-telemetry/opentelemetry-js-api)                 |
@@ -76,15 +72,11 @@ Apache License 2.0 - [http://www.apache.org/licenses/LICENSE-2.0](http://www.apa
 | `eventid`                             | `1.0.0`          | Google Inc.           | [https://github.com/google/eventid-js](https://github.com/google/eventid-js)                                                     |
 | `fast-text-encoding`                  | `1.0.3`          | Sam Thorogood         | [https://github.com/samthor/fast-text-encoding](https://github.com/samthor/fast-text-encoding)                                   |
 | `fb-watchman`                         | `2.0.1`          | Wez Furlong           | [https://github.com/facebook/watchman](https://github.com/facebook/watchman)                                                     |
-| `gaxios`                              | `3.2.0`          | Google, LLC           | [https://github.com/googleapis/gaxios](https://github.com/googleapis/gaxios)                                                     |
 | `gaxios`                              | `4.2.0`          | Google, LLC           | [https://github.com/googleapis/gaxios](https://github.com/googleapis/gaxios)                                                     |
-| `gcp-metadata`                        | `4.2.0`          | Stephen Sawchuk       | [https://github.com/googleapis/gcp-metadata](https://github.com/googleapis/gcp-metadata)                                         |
 | `gcp-metadata`                        | `4.2.1`          | Stephen Sawchuk       | [https://github.com/googleapis/gcp-metadata](https://github.com/googleapis/gcp-metadata)                                         |
-| `google-auth-library`                 | `6.1.1`          | Google Inc.           | [https://github.com/googleapis/google-auth-library-nodejs](https://github.com/googleapis/google-auth-library-nodejs)             |
 | `google-auth-library`                 | `6.1.6`          | Google Inc.           | [https://github.com/googleapis/google-auth-library-nodejs](https://github.com/googleapis/google-auth-library-nodejs)             |
 | `google-auth-library`                 | `7.0.4`          | Google Inc.           | [https://github.com/googleapis/google-auth-library-nodejs](https://github.com/googleapis/google-auth-library-nodejs)             |
 | `google-gax`                          | `2.11.2`         | Google API Authors    | [https://github.com/googleapis/gax-nodejs](https://github.com/googleapis/gax-nodejs)                                             |
-| `google-gax`                          | `2.9.0`          | Google API Authors    | [https://github.com/googleapis/gax-nodejs](https://github.com/googleapis/gax-nodejs)                                             |
 | `hex2dec`                             | `1.1.2`          |                       | [https://github.com/donmccurdy/hex2dec](https://github.com/donmccurdy/hex2dec)                                                   |
 | `json-to-pretty-yaml`                 | `1.2.2`          |                       | [https://github.com/alexcrist/json-to-pretty-yaml](https://github.com/alexcrist/json-to-pretty-yaml)                             |
 | `long`                                | `4.0.0`          | Daniel Wirtz          | [https://github.com/dcodeIO/long.js](https://github.com/dcodeIO/long.js)                                                         |
@@ -134,7 +126,6 @@ BSD 3-Clause "New" or "Revised" License - [https://opensource.org/licenses/BSD-3
 | `ieee754`                    | `1.1.13` | Feross Aboukhadijeh                      | [https://github.com/feross/ieee754](https://github.com/feross/ieee754)                                             |
 | `immutable`                  | `3.7.6`  | Lee Byron                                | [https://github.com/facebook/immutable-js](https://github.com/facebook/immutable-js)                               |
 | `node-forge`                 | `0.10.0` | Digital Bazaar, Inc.                     | [https://github.com/digitalbazaar/forge](https://github.com/digitalbazaar/forge)                                   |
-| `protobufjs`                 | `6.10.1` | Daniel Wirtz                             | [https://github.com/protobufjs/protobuf.js](https://github.com/protobufjs/protobuf.js)                             |
 | `protobufjs`                 | `6.10.2` | Daniel Wirtz                             | [https://github.com/protobufjs/protobuf.js](https://github.com/protobufjs/protobuf.js)                             |
 | `protobufjs`                 | `6.8.8`  | Daniel Wirtz                             | [https://github.com/dcodeIO/protobuf.js](https://github.com/dcodeIO/protobuf.js)                                   |
 | `qs`                         | `6.10.1` |                                          | [https://github.com/ljharb/qs](https://github.com/ljharb/qs)                                                       |
@@ -158,7 +149,6 @@ Creative Commons Zero v1.0 Universal - [https://creativecommons.org/publicdomain
 | Name        | Version  | Publisher     | Repository                                                                             |
 | ----------- | -------- | ------------- | -------------------------------------------------------------------------------------- |
 | `type-fest` | `0.11.0` | Sindre Sorhus | [https://github.com/sindresorhus/type-fest](https://github.com/sindresorhus/type-fest) |
-| `type-fest` | `0.17.0` | Sindre Sorhus | [https://github.com/sindresorhus/type-fest](https://github.com/sindresorhus/type-fest) |
 | `type-fest` | `0.20.2` | Sindre Sorhus | [https://github.com/sindresorhus/type-fest](https://github.com/sindresorhus/type-fest) |
 
 #### GPL-2.0
@@ -382,8 +372,6 @@ MIT License - [https://opensource.org/licenses/MIT](https://opensource.org/licen
 | `@types/long`                                        | `4.0.1`        |                                | [https://github.com/DefinitelyTyped/DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped)                                                                                             |
 | `@types/node-fetch`                                  | `2.5.10`       |                                | [https://github.com/DefinitelyTyped/DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped)                                                                                             |
 | `@types/node`                                        | `10.17.13`     |                                | [https://github.com/DefinitelyTyped/DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped)                                                                                             |
-| `@types/node`                                        | `12.12.67`     |                                | [https://github.com/DefinitelyTyped/DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped)                                                                                             |
-| `@types/node`                                        | `13.13.25`     |                                | [https://github.com/DefinitelyTyped/DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped)                                                                                             |
 | `@types/node`                                        | `13.13.50`     |                                | [https://github.com/DefinitelyTyped/DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped)                                                                                             |
 | `@types/node`                                        | `14.14.41`     |                                | [https://github.com/DefinitelyTyped/DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped)                                                                                             |
 | `@types/parse-json`                                  | `4.0.0`        |                                | [https://github.com/DefinitelyTyped/DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped)                                                                                             |
@@ -403,7 +391,7 @@ MIT License - [https://opensource.org/licenses/MIT](https://opensource.org/licen
 | `ansi-escapes`                                       | `4.3.1`        | Sindre Sorhus                  | [https://github.com/sindresorhus/ansi-escapes](https://github.com/sindresorhus/ansi-escapes)                                                                                                         |
 | `ansi-regex`                                         | `2.1.1`        | Sindre Sorhus                  | [https://github.com/chalk/ansi-regex](https://github.com/chalk/ansi-regex)                                                                                                                           |
 | `ansi-regex`                                         | `3.0.0`        | Sindre Sorhus                  | [https://github.com/chalk/ansi-regex](https://github.com/chalk/ansi-regex)                                                                                                                           |
-| `ansi-regex`                                         | `5.0.0`        | Sindre Sorhus                  | [https://github.com/chalk/ansi-regex](https://github.com/chalk/ansi-regex)                                                                                                                           |
+| `ansi-regex`                                         | `5.0.1`        | Sindre Sorhus                  | [https://github.com/chalk/ansi-regex](https://github.com/chalk/ansi-regex)                                                                                                                           |
 | `ansi-regex`                                         | `6.0.0`        | Sindre Sorhus                  | [https://github.com/chalk/ansi-regex](https://github.com/chalk/ansi-regex)                                                                                                                           |
 | `ansi-styles`                                        | `2.2.1`        | Sindre Sorhus                  | [https://github.com/chalk/ansi-styles](https://github.com/chalk/ansi-styles)                                                                                                                         |
 | `ansi-styles`                                        | `3.2.1`        | Sindre Sorhus                  | [https://github.com/chalk/ansi-styles](https://github.com/chalk/ansi-styles)                                                                                                                         |
@@ -546,7 +534,6 @@ MIT License - [https://opensource.org/licenses/MIT](https://opensource.org/licen
 | `graphql-ws`                                         | `4.9.0`        |                                | [https://github.com/enisdenjo/graphql-ws](https://github.com/enisdenjo/graphql-ws)                                                                                                                   |
 | `graphql-ws`                                         | `5.3.0`        | Denis Badurina                 | [https://github.com/enisdenjo/graphql-ws](https://github.com/enisdenjo/graphql-ws)                                                                                                                   |
 | `graphql`                                            | `15.5.0`       |                                | [https://github.com/graphql/graphql-js](https://github.com/graphql/graphql-js)                                                                                                                       |
-| `gtoken`                                             | `5.0.4`        | Google, LLC                    | [https://github.com/google/node-gtoken](https://github.com/google/node-gtoken)                                                                                                                       |
 | `gtoken`                                             | `5.2.1`        | Google, LLC                    | [https://github.com/google/node-gtoken](https://github.com/google/node-gtoken)                                                                                                                       |
 | `handlebars`                                         | `4.7.7`        | Yehuda Katz                    | [https://github.com/wycats/handlebars.js](https://github.com/wycats/handlebars.js)                                                                                                                   |
 | `has-ansi`                                           | `2.0.0`        | Sindre Sorhus                  | [https://github.com/sindresorhus/has-ansi](https://github.com/sindresorhus/has-ansi)                                                                                                                 |
@@ -827,7 +814,6 @@ MIT License - [https://opensource.org/licenses/MIT](https://opensource.org/licen
 | `ts-log`                                             | `2.2.3`        | Stagnation Lab                 | [https://github.com/kallaspriit/ts-log](https://github.com/kallaspriit/ts-log)                                                                                                                       |
 | `ts-node`                                            | `9.1.1`        | Blake Embrey                   | [https://github.com/TypeStrong/ts-node](https://github.com/TypeStrong/ts-node)                                                                                                                       |
 | `type-fest`                                          | `0.11.0`       | Sindre Sorhus                  | [https://github.com/sindresorhus/type-fest](https://github.com/sindresorhus/type-fest)                                                                                                               |
-| `type-fest`                                          | `0.17.0`       | Sindre Sorhus                  | [https://github.com/sindresorhus/type-fest](https://github.com/sindresorhus/type-fest)                                                                                                               |
 | `type-fest`                                          | `0.20.2`       | Sindre Sorhus                  | [https://github.com/sindresorhus/type-fest](https://github.com/sindresorhus/type-fest)                                                                                                               |
 | `typedarray-to-buffer`                               | `3.1.5`        | Feross Aboukhadijeh            | [https://github.com/feross/typedarray-to-buffer](https://github.com/feross/typedarray-to-buffer)                                                                                                     |
 | `ua-parser-js`                                       | `0.7.28`       | Faisal Salman                  | [https://github.com/faisalman/ua-parser-js](https://github.com/faisalman/ua-parser-js)                                                                                                               |
